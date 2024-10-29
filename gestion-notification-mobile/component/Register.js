@@ -1,18 +1,30 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { TextInput, Button, Snackbar, HelperText, Title, useTheme } from 'react-native-paper';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert, ActivityIndicator } from 'react-native';
+import { TextInput, Button, HelperText, Title, useTheme } from 'react-native-paper';
 
 const Register = ({ navigation }) => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false); // Indicateur de chargement
   const [error, setError] = useState('');
   const theme = useTheme();
 
-  const onDismissSnackBar = () => setVisible(false);
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleRegister = () => {
+    if (!username) {
+      setError('Le nom d’utilisateur est requis.');
+      return;
+    }
+    if (!validateEmail(email)) {
+      setError('Adresse e-mail invalide.');
+      return;
+    }
     if (password !== confirmPassword) {
       setError('Les mots de passe ne correspondent pas.');
       return;
@@ -21,9 +33,17 @@ const Register = ({ navigation }) => {
       setError('Le mot de passe doit contenir au moins 6 caractères.');
       return;
     }
+
+    // Réinitialisation de l'erreur et activation du chargement
     setError('');
-    alert('Compte créé avec succès!');
-    navigation.navigate('Login'); // Redirection vers la page de connexion
+    setLoading(true);
+
+    // Simuler une requête réseau
+    setTimeout(() => {
+      setLoading(false);
+      Alert.alert('Succès', 'Compte créé avec succès!');
+      navigation.navigate('Login');
+    }, 2000);
   };
 
   return (
@@ -31,7 +51,18 @@ const Register = ({ navigation }) => {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}>
-        <Title style={styles.title}>Inscription</Title>
+        <Title style={styles.title}>Créer un compte</Title>
+
+        <TextInput
+          label="Nom d'utilisateur"
+          value={username}
+          onChangeText={setUsername}
+          mode="outlined"
+          style={styles.input}
+        />
+        <HelperText type="error" visible={!username && error.includes('utilisateur')}>
+          {error}
+        </HelperText>
 
         <TextInput
           label="Adresse e-mail"
@@ -42,6 +73,9 @@ const Register = ({ navigation }) => {
           autoCapitalize="none"
           style={styles.input}
         />
+        <HelperText type="error" visible={!validateEmail(email) && error.includes('e-mail')}>
+          {error}
+        </HelperText>
 
         <TextInput
           label="Mot de passe"
@@ -51,6 +85,9 @@ const Register = ({ navigation }) => {
           mode="outlined"
           style={styles.input}
         />
+        <HelperText type="error" visible={password.length < 6 && error.includes('caractères')}>
+          {error}
+        </HelperText>
 
         <TextInput
           label="Confirmer le mot de passe"
@@ -60,29 +97,18 @@ const Register = ({ navigation }) => {
           mode="outlined"
           style={styles.input}
         />
-
-        <HelperText type="error" visible={!!error}>
+        <HelperText type="error" visible={password !== confirmPassword && error.includes('correspondent')}>
           {error}
         </HelperText>
 
         <Button
           mode="contained"
           onPress={handleRegister}
+          disabled={loading}
           style={styles.button}
           contentStyle={{ paddingVertical: 8 }}>
-          S'inscrire
+          {loading ? <ActivityIndicator color="#fff" /> : "S'inscrire"}
         </Button>
-
-        <Snackbar
-          visible={visible}
-          onDismiss={onDismissSnackBar}
-          duration={3000}
-          action={{
-            label: 'Fermer',
-            onPress: () => {},
-          }}>
-          Inscription réussie!
-        </Snackbar>
 
         <Button
           mode="text"
