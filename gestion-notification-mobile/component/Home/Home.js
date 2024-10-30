@@ -1,56 +1,71 @@
-// HomeScreen.js
-
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
+
+const menuItems = [
+  { title: 'Cours', icon: '📚' },
+  { title: 'Notes', icon: '📝' },
+  { title: 'Classe', icon: '🏫' },
+  { title: 'Emploi', icon: '📅' },
+  { title: 'Nouveau', icon: '➕' },
+];
 
 const HomeScreen = () => {
-  // État pour contrôler l'affichage du menu
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [translateX] = useState(new Animated.Value(-width));
 
-  // Fonction pour basculer la visibilité du menu
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
+    Animated.timing(translateX, {
+      toValue: isMenuVisible ? -width : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
   };
 
   return (
     <View style={{ flex: 1 }}>
       {/* Navbar */}
       <View style={styles.navbar}>
-        {/* Bouton menu (gauche) avec trois lignes */}
         <TouchableOpacity onPress={toggleMenu} style={styles.hamburgerButton}>
           <View style={styles.line} />
           <View style={styles.line} />
           <View style={styles.line} />
         </TouchableOpacity>
 
-        {/* Titre navbar (centre) */}
         <Text style={styles.navTitle}>Espace Étudiant</Text>
 
-        {/* Bouton profil (droite) */}
         <TouchableOpacity>
           <Text style={styles.profileButton}>👤</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Menu déroulant */}
-      {isMenuVisible && (
-        <View style={styles.dropdownMenu}>
-          <TouchableOpacity style={styles.menuItem} onPress={() => alert('Bouton 1')}>
-            <Text style={styles.menuItemText}>Bouton 1</Text>
+      {/* Sidebar */}
+      <Animated.View style={[styles.sidebar, { transform: [{ translateX }] }]}>
+        {/* Hamburger icon in the sidebar aligned to the left */}
+        <TouchableOpacity onPress={toggleMenu} style={styles.sidebarHeader}>
+          <View style={styles.line} />
+          <View style={styles.line} />
+          <View style={styles.line} />
+        </TouchableOpacity>
+        {menuItems.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.menuItem}
+            onPress={() => {
+              alert(`${item.title} clicked!`);
+              toggleMenu(); // Close sidebar when an item is clicked
+            }}
+          >
+            <Text style={styles.menuItemText}>
+              {item.icon} {item.title}
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={() => alert('Bouton 2')}>
-            <Text style={styles.menuItemText}>Bouton 2</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={() => alert('Bouton 3')}>
-            <Text style={styles.menuItemText}>Bouton 3</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={() => alert('Bouton 4')}>
-            <Text style={styles.menuItemText}>Bouton 4</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        ))}
+      </Animated.View>
 
-      {/* Contenu de la page */}
+      {/* Main content */}
       <ScrollView style={styles.container}>
         <Text style={styles.title}>Bienvenue, étudiant !</Text>
         <View style={styles.section}>
@@ -128,30 +143,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
-  dropdownMenu: {
+  sidebar: {
     position: 'absolute',
-    top: 60,
-    left: 10,
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    padding: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 5,
+    top: 0,
+    left: 0,
+    width: 220, // Set a fixed width for the sidebar
+    height: '100%',
+    backgroundColor: '#8e24aa',
+    paddingTop: 10, // Space for the hamburger icon
     zIndex: 10,
   },
+  sidebarHeader: {
+    alignItems: 'flex-start', // Align the hamburger icon to the left
+    paddingVertical: 15, // Match padding with navbar
+    paddingHorizontal: 15, // Add horizontal padding
+    backgroundColor: 'transparent', // No background color
+  },
   menuItem: {
-    paddingVertical: 10,
+    paddingVertical: 15,
     paddingHorizontal: 20,
     marginVertical: 5,
-    backgroundColor: '#8e24aa',
-    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center', // Center icon and text vertically
   },
   menuItemText: {
     fontSize: 16,
     color: '#fff',
-    textAlign: 'center',
+    textAlign: 'left', // Align text to the left
+    marginLeft: 10, // Space between icon and text
   },
 });
 

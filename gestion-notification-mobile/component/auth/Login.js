@@ -26,7 +26,7 @@ const Login = ({ navigation }) => {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://192.168.43.82:3000/login', { email, password });
+      const response = await axios.post('http://192.168.98.73:3000/login', { email, password });
 
       if (response.data.success) {
         Alert.alert(
