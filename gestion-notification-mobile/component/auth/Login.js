@@ -1,25 +1,40 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert, ActivityIndicator } from 'react-native';
 import { Button, TextInput, Title, useTheme } from 'react-native-paper';
+import axios from 'axios';
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const theme = useTheme();
 
-  const handleLogin = () => {
-    if (email === 'admin@example.com' && password === 'password123') {
-      Alert.alert(
-        'Connexion réussie',
-        'Vous êtes connecté avec succès!',
-        [{ text: 'OK' }]
-      );
-    } else {
-      Alert.alert(
-        'Erreur',
-        'Email ou mot de passe incorrect.',
-        [{ text: 'Réessayer' }]
-      );
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Erreur', 'Veuillez entrer votre e-mail et mot de passe.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await axios.post('http://192.168.209.231:3000/login', {
+        email,
+        password,
+      });
+
+      if (response.data.success) {
+        Alert.alert(
+          'Connexion réussie',
+          'Vous êtes connecté avec succès!',
+          [{ text: 'OK', onPress: () => navigation.navigate('Home') }]
+        );
+      } else {
+        Alert.alert('Erreur', response.data.error || 'Email ou mot de passe incorrect.');
+      }
+    } catch (error) {
+      Alert.alert('Erreur', error.response?.data?.error || 'Une erreur est survenue.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,9 +67,10 @@ const Login = ({ navigation }) => {
         <Button
           mode="contained"
           onPress={handleLogin}
+          disabled={loading}
           style={styles.button}
           contentStyle={{ paddingVertical: 8 }}>
-          Se connecter
+          {loading ? <ActivityIndicator color="#fff" /> : "Se connecter"}
         </Button>
 
         <Button

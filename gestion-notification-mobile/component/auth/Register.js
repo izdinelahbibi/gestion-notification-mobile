@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert, ActivityIndicator } from 'react-native';
 import { TextInput, Button, HelperText, Title, useTheme } from 'react-native-paper';
+import axios from 'axios';
 
 const Register = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false); // Indicateur de chargement
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const theme = useTheme();
 
@@ -16,34 +17,31 @@ const Register = ({ navigation }) => {
     return emailRegex.test(email);
   };
 
-  const handleRegister = () => {
-    if (!username) {
-      setError('Le nom d’utilisateur est requis.');
-      return;
-    }
-    if (!validateEmail(email)) {
-      setError('Adresse e-mail invalide.');
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas.');
-      return;
-    }
-    if (password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères.');
+  const handleRegister = async () => {
+    if (!username || !validateEmail(email) || password !== confirmPassword || password.length < 6) {
+      setError('Vérifiez les informations saisies.');
       return;
     }
 
-    // Réinitialisation de l'erreur et activation du chargement
     setError('');
     setLoading(true);
 
-    // Simuler une requête réseau
-    setTimeout(() => {
+    try {
+      const response = await axios.post('http://192.168.209.231:3000/register', {
+        username,
+        email,
+        password,
+      });
+
+      if (response.data.message) {
+        Alert.alert('Succès', response.data.message);
+        navigation.navigate('Login');
+      }
+    } catch (error) {
+      setError(error.response?.data?.error || 'Une erreur est survenue');
+    } finally {
       setLoading(false);
-      Alert.alert('Succès', 'Compte créé avec succès!');
-      navigation.navigate('Login');
-    }, 2000);
+    }
   };
 
   return (
@@ -73,7 +71,7 @@ const Register = ({ navigation }) => {
           autoCapitalize="none"
           style={styles.input}
         />
-        <HelperText type="error" visible={!validateEmail(email) && error.includes('e-mail')}>
+        <HelperText type="error" visible={!validateEmail(email)}>
           {error}
         </HelperText>
 
@@ -85,7 +83,7 @@ const Register = ({ navigation }) => {
           mode="outlined"
           style={styles.input}
         />
-        <HelperText type="error" visible={password.length < 6 && error.includes('caractères')}>
+        <HelperText type="error" visible={password.length < 6}>
           {error}
         </HelperText>
 
@@ -97,7 +95,7 @@ const Register = ({ navigation }) => {
           mode="outlined"
           style={styles.input}
         />
-        <HelperText type="error" visible={password !== confirmPassword && error.includes('correspondent')}>
+        <HelperText type="error" visible={password !== confirmPassword}>
           {error}
         </HelperText>
 
@@ -114,7 +112,7 @@ const Register = ({ navigation }) => {
           mode="text"
           onPress={() => navigation.navigate('Login')}
           style={styles.link}>
-          Déjà un compte ? Connectez-vous
+          Vous avez déjà un compte ? Connectez-vous
         </Button>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
