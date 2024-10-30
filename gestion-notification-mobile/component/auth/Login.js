@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert, ActivityIndicator } from 'react-native';
+import { 
+  View, 
+  StyleSheet, 
+  KeyboardAvoidingView, 
+  Platform, 
+  TouchableWithoutFeedback, 
+  Keyboard, 
+  Alert, 
+  ActivityIndicator 
+} from 'react-native';
 import { Button, TextInput, Title, useTheme } from 'react-native-paper';
 import axios from 'axios';
 
@@ -17,7 +26,7 @@ const Login = ({ navigation }) => {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://192.168.98.73:3000/login', { email, password });
+      const response = await axios.post('http://192.168.43.82:3000/login', { email, password });
 
       if (response.data.success) {
         Alert.alert(
@@ -29,7 +38,7 @@ const Login = ({ navigation }) => {
         Alert.alert('Erreur', response.data.error || 'Email ou mot de passe incorrect.');
       }
     } catch (error) {
-      console.error('Erreur de connexion:', error);  // Log l'erreur pour le débogage
+      console.error('Erreur de connexion:', error); 
       Alert.alert('Erreur', error.response?.data?.error || 'Une erreur est survenue. Vérifiez votre connexion.');
     } finally {
       setLoading(false);
@@ -41,42 +50,45 @@ const Login = ({ navigation }) => {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}>
-        <Title style={styles.title}>Connexion</Title>
+        
+        <View style={styles.formContainer}>
+          <Title style={styles.title}>Connexion</Title>
 
-        <TextInput
-          label="Adresse e-mail"
-          value={email}
-          onChangeText={setEmail}
-          mode="outlined"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          style={styles.input}
-        />
+          <TextInput
+            label="Adresse e-mail"
+            value={email}
+            onChangeText={setEmail}
+            mode="outlined"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            style={styles.input}
+          />
 
-        <TextInput
-          label="Mot de passe"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          mode="outlined"
-          style={styles.input}
-        />
+          <TextInput
+            label="Mot de passe"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            mode="outlined"
+            style={styles.input}
+          />
 
-        <Button
-          mode="contained"
-          onPress={handleLogin}
-          disabled={loading}
-          style={styles.button}
-          contentStyle={{ paddingVertical: 8 }}>
-          {loading ? <ActivityIndicator color="#fff" /> : "Se connecter"}
-        </Button>
+          <Button
+            mode="contained"
+            onPress={handleLogin}
+            disabled={loading}
+            style={styles.button}
+            contentStyle={{ paddingVertical: 8 }}>
+            {loading ? <ActivityIndicator color="#fff" /> : "Se connecter"}
+          </Button>
 
-        <Button
-          mode="text"
-          onPress={() => navigation.navigate('Register')}
-          style={styles.link}>
-          Pas de compte ? Inscrivez-vous
-        </Button>
+          <Button
+            mode="text"
+            onPress={() => navigation.navigate('Register')}
+            style={styles.link}>
+            Pas de compte ? Inscrivez-vous
+          </Button>
+        </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -86,13 +98,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 20,
-    backgroundColor: '#f0f2f5',
+    backgroundColor: '#f3e5f5',  // Arrière-plan général
+  },
+  formContainer: {
+    marginHorizontal: 20,
+    padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Fond semi-transparent
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,  // Pour Android
   },
   title: {
     textAlign: 'center',
     marginBottom: 20,
     color: '#333',
+    fontSize: 24,
   },
   input: {
     marginBottom: 10,
