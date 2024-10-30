@@ -8,7 +8,7 @@ const Register = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // Indicateur de chargement
   const [error, setError] = useState('');
   const theme = useTheme();
 
@@ -18,21 +18,33 @@ const Register = ({ navigation }) => {
   };
 
   const handleRegister = async () => {
-    if (!username || !validateEmail(email) || password !== confirmPassword || password.length < 6) {
-      setError('Vérifiez les informations saisies.');
+    if (!username) {
+      setError('Le nom d’utilisateur est requis.');
       return;
     }
-
+    if (!validateEmail(email)) {
+      setError('Adresse e-mail invalide.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Les mots de passe ne correspondent pas.');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères.');
+      return;
+    }
+  
     setError('');
     setLoading(true);
-
+  
     try {
-      const response = await axios.post('http://192.168.209.231:3000/register', {
+      const response = await axios.post('http://192.168.98.231:3000/register', {
         username,
         email,
         password,
       });
-
+  
       if (response.data.message) {
         Alert.alert('Succès', response.data.message);
         navigation.navigate('Login');
@@ -59,7 +71,7 @@ const Register = ({ navigation }) => {
           style={styles.input}
         />
         <HelperText type="error" visible={!username && error.includes('utilisateur')}>
-          {error}
+          {error.includes('utilisateur') ? error : ''}
         </HelperText>
 
         <TextInput
@@ -71,8 +83,8 @@ const Register = ({ navigation }) => {
           autoCapitalize="none"
           style={styles.input}
         />
-        <HelperText type="error" visible={!validateEmail(email)}>
-          {error}
+        <HelperText type="error" visible={!validateEmail(email) && error.includes('e-mail')}>
+          {error.includes('e-mail') ? error : ''}
         </HelperText>
 
         <TextInput
@@ -83,8 +95,8 @@ const Register = ({ navigation }) => {
           mode="outlined"
           style={styles.input}
         />
-        <HelperText type="error" visible={password.length < 6}>
-          {error}
+        <HelperText type="error" visible={password.length < 6 && error.includes('caractères')}>
+          {error.includes('caractères') ? error : ''}
         </HelperText>
 
         <TextInput
@@ -95,8 +107,8 @@ const Register = ({ navigation }) => {
           mode="outlined"
           style={styles.input}
         />
-        <HelperText type="error" visible={password !== confirmPassword}>
-          {error}
+        <HelperText type="error" visible={password !== confirmPassword && error.includes('correspondent')}>
+          {error.includes('correspondent') ? error : ''}
         </HelperText>
 
         <Button
@@ -112,7 +124,7 @@ const Register = ({ navigation }) => {
           mode="text"
           onPress={() => navigation.navigate('Login')}
           style={styles.link}>
-          Vous avez déjà un compte ? Connectez-vous
+          Déjà un compte ? Connectez-vous
         </Button>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>

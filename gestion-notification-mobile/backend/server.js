@@ -7,12 +7,13 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'default_secret_key'; // Remplacez par une clé sécurisée en production
 
 // Middleware
-app.use(cors({ origin: 'http://192.168.209.231:3000' })); // Remplacez par l'adresse de votre frontend si différent
+app.use(cors());  // Accepte toutes les origines pour les tests; en production, spécifiez l'origine
 app.use(express.json());
 
-// Connection MySQL
+// Connexion MySQL
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',     // Remplacez par votre nom d'utilisateur MySQL
@@ -80,12 +81,12 @@ app.post('/login', (req, res) => {
       return res.status(400).json({ error: 'Mot de passe incorrect' });
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
     res.json({ success: true, message: 'Connexion réussie', token });
   });
 });
 
 // Démarrer le serveur
 app.listen(PORT, () => {
-  console.log(`Serveur en cours d'exécution sur http://192.168.209.231:${PORT}`);
+  console.log(`Serveur en cours d'exécution sur http://192.168.98.231:${PORT}`);
 });

@@ -17,10 +17,7 @@ const Login = ({ navigation }) => {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://192.168.209.231:3000/login', {
-        email,
-        password,
-      });
+      const response = await axios.post('http://192.168.98.231:3000/login', { email, password });
 
       if (response.data.success) {
         Alert.alert(
@@ -32,7 +29,8 @@ const Login = ({ navigation }) => {
         Alert.alert('Erreur', response.data.error || 'Email ou mot de passe incorrect.');
       }
     } catch (error) {
-      Alert.alert('Erreur', error.response?.data?.error || 'Une erreur est survenue.');
+      console.error('Erreur de connexion:', error);  // Log l'erreur pour le débogage
+      Alert.alert('Erreur', error.response?.data?.error || 'Une erreur est survenue. Vérifiez votre connexion.');
     } finally {
       setLoading(false);
     }
