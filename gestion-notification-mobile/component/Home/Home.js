@@ -4,7 +4,9 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated, Dimensi
 
 const { width } = Dimensions.get('window');
 
+// Ajouter l'icône de profil en premier dans le tableau menuItems
 const menuItems = [
+  { title: 'Profil', icon: '👤', action: 'profile' }, // Profil en premier
   { title: 'Cours', icon: '📚' },
   { title: 'Notes', icon: '📝' },
   { title: 'Classe', icon: '🏫' },
@@ -38,9 +40,7 @@ const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
 
         <Text style={styles.navTitle}>Espace Étudiant</Text>
 
-        <TouchableOpacity>
-          <Text style={styles.profileButton}>👤</Text>
-        </TouchableOpacity>
+        {/* Supprimer le bouton de profil ici */}
       </View>
 
       {/* Sidebar */}
@@ -57,6 +57,8 @@ const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
             onPress={() => {
               if (item.action === 'logout') {
                 navigation.navigate('Login'); // Naviguer vers la page de connexion
+              } else if (item.action === 'profile') {
+                alert('Profil cliqué !'); // Remplacer par la navigation vers le profil
               } else {
                 alert(`${item.title} clicked!`);
               }
@@ -120,10 +122,6 @@ const styles = StyleSheet.create({
     textShadowColor: '#2d3748',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
-  },
-  profileButton: {
-    fontSize: 24,
-    color: '#fff',
   },
   title: {
     fontSize: 26,
