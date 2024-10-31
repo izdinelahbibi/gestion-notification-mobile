@@ -52,8 +52,7 @@ const Register = ({ navigation }) => {
       });
 
       if (response.data.message) {
-        Alert.alert('Succès', response.data.message);
-        navigation.navigate('Login');
+        navigation.navigate('Login');  // Navigation directe vers la page Login
       }
     } catch (error) {
       setError(error.response?.data?.error || 'Une erreur est survenue');
@@ -119,14 +118,16 @@ const Register = ({ navigation }) => {
             {error.includes('correspondent') ? error : ''}
           </HelperText>
 
-          <Button
-            mode="contained"
-            onPress={handleRegister}
-            disabled={loading}
-            style={styles.button}
-            contentStyle={{ paddingVertical: 8 }}>
-            {loading ? <ActivityIndicator color="#fff" /> : "S'inscrire"}
-          </Button>
+          <View style={styles.buttonContainer}>
+            <Button
+              mode="contained"
+              onPress={handleRegister}
+              disabled={loading}
+              style={styles.button}
+              contentStyle={{ paddingVertical: 8 }}>
+              {loading ? <ActivityIndicator color="#fff" /> : "S'inscrire"}
+            </Button>
+          </View>
 
           <Button
             mode="text"
@@ -144,34 +145,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#f3e5f5', // Arrière-plan principal
+    backgroundColor: '#e0f7fa', // Arrière-plan principal
   },
   formContainer: {
     marginHorizontal: 20,
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Fond semi-transparent
-    borderRadius: 10,
+    backgroundColor: '#ffffff', // Fond opaque
+    borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5, // Élément en relief pour Android
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 8, // Élément en relief pour Android
   },
   title: {
     textAlign: 'center',
     marginBottom: 20,
-    color: '#333',
-    fontSize: 24,
+    color: '#00796b',
+    fontSize: 26,
+    fontWeight: 'bold',
   },
   input: {
-    marginBottom: 10,
+    marginBottom: 15,
+    backgroundColor: '#f9fbe7', // Fond des champs
+  },
+  buttonContainer: {
+    overflow: 'hidden',
+    borderRadius: 12,
   },
   button: {
     marginTop: 10,
+    backgroundColor: '#00796b', // Couleur du bouton
+    borderRadius: 12,
   },
   link: {
     marginTop: 10,
     alignSelf: 'center',
+    color: '#00796b',
   },
 });
 

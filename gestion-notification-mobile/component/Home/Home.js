@@ -10,9 +10,10 @@ const menuItems = [
   { title: 'Classe', icon: '🏫' },
   { title: 'Emploi', icon: '📅' },
   { title: 'Nouveau', icon: '➕' },
+  { title: 'Déconnexion', icon: '🚪', action: 'logout' }, // Nouveau bouton de déconnexion
 ];
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [translateX] = useState(new Animated.Value(-width));
 
@@ -44,7 +45,6 @@ const HomeScreen = () => {
 
       {/* Sidebar */}
       <Animated.View style={[styles.sidebar, { transform: [{ translateX }] }]}>
-        {/* Hamburger icon in the sidebar aligned to the left */}
         <TouchableOpacity onPress={toggleMenu} style={styles.sidebarHeader}>
           <View style={styles.line} />
           <View style={styles.line} />
@@ -55,8 +55,12 @@ const HomeScreen = () => {
             key={index}
             style={styles.menuItem}
             onPress={() => {
-              alert(`${item.title} clicked!`);
-              toggleMenu(); // Close sidebar when an item is clicked
+              if (item.action === 'logout') {
+                navigation.navigate('Login'); // Naviguer vers la page de connexion
+              } else {
+                alert(`${item.title} clicked!`);
+              }
+              toggleMenu();
             }}
           >
             <Text style={styles.menuItemText}>
@@ -83,7 +87,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3e5f5',
+    backgroundColor: '#f0f4f8',
     paddingHorizontal: 20,
     paddingTop: 20,
   },
@@ -91,7 +95,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#7b1fa2',
+    backgroundColor: '#35475e',
     paddingHorizontal: 15,
     paddingVertical: 12,
   },
@@ -109,24 +113,28 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   navTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#f0f4f8',
+    letterSpacing: 1,
+    textShadowColor: '#2d3748',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   profileButton: {
     fontSize: 24,
     color: '#fff',
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#4a148c',
+    color: '#2d3748',
     marginBottom: 20,
   },
   section: {
     marginVertical: 15,
-    padding: 15,
+    padding: 20,
     borderRadius: 10,
     backgroundColor: '#fff',
     shadowColor: '#000',
@@ -135,43 +143,43 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#6a1b9a',
+    color: '#4a5568',
     marginBottom: 10,
   },
   text: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 16,
+    color: '#718096',
   },
   sidebar: {
     position: 'absolute',
     top: 0,
     left: 0,
-    width: 220, // Set a fixed width for the sidebar
+    width: 180,
     height: '100%',
-    backgroundColor: '#8e24aa',
-    paddingTop: 10, // Space for the hamburger icon
+    backgroundColor: '#2c5282',
+    paddingTop: 10,
     zIndex: 10,
   },
   sidebarHeader: {
-    alignItems: 'flex-start', // Align the hamburger icon to the left
-    paddingVertical: 15, // Match padding with navbar
-    paddingHorizontal: 15, // Add horizontal padding
-    backgroundColor: 'transparent', // No background color
+    alignItems: 'flex-start',
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    backgroundColor: 'transparent',
   },
   menuItem: {
     paddingVertical: 15,
     paddingHorizontal: 20,
     marginVertical: 5,
     flexDirection: 'row',
-    alignItems: 'center', // Center icon and text vertically
+    alignItems: 'center',
   },
   menuItemText: {
-    fontSize: 16,
-    color: '#fff',
-    textAlign: 'left', // Align text to the left
-    marginLeft: 10, // Space between icon and text
+    fontSize: 18,
+    color: '#e2e8f0',
+    textAlign: 'left',
+    marginLeft: 10,
   },
 });
 
