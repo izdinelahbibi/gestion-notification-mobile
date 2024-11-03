@@ -1,21 +1,20 @@
-import { Link } from '@react-navigation/native';
+import { Link } from '@react-navigation/native'; // Assurez-vous que vous importez Link si nécessaire.
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated, Dimensions } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
-// Ajouter l'icône de profil en premier dans le tableau menuItems
 const menuItems = [
-  { title: 'Profil', icon: '👤', action: 'profile' }, // Profil en premier
+  { title: 'Profil', icon: '👤', action: 'profile' },
   { title: 'Cours', icon: '📚' },
   { title: 'Notes', icon: '📝' },
   { title: 'Classe', icon: '🏫' },
   { title: 'Emploi', icon: '📅' },
   { title: 'Nouveau', icon: '➕' },
-  { title: 'Déconnexion', icon: '🚪', action: 'logout' }, // Nouveau bouton de déconnexion
+  { title: 'Déconnexion', icon: '🚪', action: 'logout' },
 ];
 
-const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
+const HomeScreen = ({ navigation }) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [translateX] = useState(new Animated.Value(-width));
 
@@ -30,7 +29,6 @@ const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Navbar */}
       <View style={styles.navbar}>
         <TouchableOpacity onPress={toggleMenu} style={styles.hamburgerButton}>
           <View style={styles.line} />
@@ -39,11 +37,8 @@ const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
         </TouchableOpacity>
 
         <Text style={styles.navTitle}>Espace Étudiant</Text>
-
-        {/* Supprimer le bouton de profil ici */}
       </View>
 
-      {/* Sidebar */}
       <Animated.View style={[styles.sidebar, { transform: [{ translateX }] }]}>
         <TouchableOpacity onPress={toggleMenu} style={styles.sidebarHeader}>
           <View style={styles.line} />
@@ -56,9 +51,9 @@ const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
             style={styles.menuItem}
             onPress={() => {
               if (item.action === 'logout') {
-                navigation.navigate('Login'); // Naviguer vers la page de connexion
+                navigation.navigate('Login');
               } else if (item.action === 'profile') {
-                alert('Profil cliqué !'); // Remplacer par la navigation vers le profil
+                navigation.navigate('Profile'); // Remplacez par la navigation vers le profil
               } else {
                 alert(`${item.title} clicked!`);
               }
@@ -72,7 +67,6 @@ const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
         ))}
       </Animated.View>
 
-      {/* Main content */}
       <ScrollView style={styles.container}>
         <Text style={styles.title}>Bienvenue, étudiant !</Text>
         <View style={styles.section}>

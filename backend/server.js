@@ -88,5 +88,5 @@ app.post('/login', (req, res) => {
 
 // Démarrer le serveur
 app.listen(PORT, () => {
-  console.log(`Serveur en cours d'exécution sur http://192.168.98.73:${PORT}`);
+  console.log(`Serveur en cours d'exécution sur ${PORT}`);
 });

@@ -9,15 +9,13 @@ import {
   Alert, 
   ActivityIndicator 
 } from 'react-native';
-import { Button, TextInput, Title, useTheme } from 'react-native-paper';
-import axios from 'axios';
+import { Button, TextInput, Title } from 'react-native-paper';
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [scale, setScale] = useState(1); // État pour l'échelle
-  const theme = useTheme();
+  const [scale, setScale] = useState(1);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -26,17 +24,26 @@ const Login = ({ navigation }) => {
     }
 
     setLoading(true);
+    console.log('Tentative de connexion avec:', { email, password });
     try {
-      const response = await axios.post('http://192.168.98.73:3000/login', { email, password });
+      const response = await fetch('http://192.168.226.73:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      const data = await response.json();
 
-      if (response.data.success) {
-        navigation.navigate('Home');  // Navigation directe vers la page Home
+      if (response.ok) {
+        navigation.navigate('Home');
       } else {
-        Alert.alert('Erreur', response.data.error || 'Email ou mot de passe incorrect.');
+        Alert.alert('Erreur', data.error || 'Email ou mot de passe incorrect.');
       }
     } catch (error) {
-      console.error('Erreur de connexion:', error); 
-      Alert.alert('Erreur', error.response?.data?.error || 'Une erreur est survenue. Vérifiez votre connexion.');
+      console.error('Erreur de connexion:', error);
+      Alert.alert('Erreur', 'Une erreur est survenue lors de la connexion.');
     } finally {
       setLoading(false);
     }
@@ -73,11 +80,11 @@ const Login = ({ navigation }) => {
           <View style={styles.buttonContainer}>
             <Button
               mode="contained"
-              onPressIn={() => setScale(0.95)} // Réduire la taille lors de l'appui
-              onPressOut={() => setScale(1)} // Rétablir la taille
+              onPressIn={() => setScale(0.95)}
+              onPressOut={() => setScale(1)}
               onPress={handleLogin}
               disabled={loading}
-              style={[styles.button, { transform: [{ scale }] }]} // Appliquer l'échelle
+              style={[styles.button, { transform: [{ scale }] }]}
               contentStyle={{ paddingVertical: 8 }}>
               {loading ? <ActivityIndicator color="#fff" /> : "Se connecter"}
             </Button>
@@ -99,18 +106,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#e0f7fa',  // Arrière-plan général
+    backgroundColor: '#e0f7fa',
   },
   formContainer: {
     marginHorizontal: 20,
     padding: 20,
-    backgroundColor: '#ffffff', // Fond opaque
+    backgroundColor: '#ffffff',
     borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 6,
-    elevation: 8,  // Pour Android
+    elevation: 8,
   },
   title: {
     textAlign: 'center',
@@ -121,7 +128,7 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 15,
-    backgroundColor: '#f9fbe7', // Fond des champs
+    backgroundColor: '#f9fbe7',
   },
   buttonContainer: {
     overflow: 'hidden',
@@ -129,7 +136,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 10,
-    backgroundColor: '#00796b', // Couleur du bouton
+    backgroundColor: '#00796b',
     borderRadius: 12,
   },
   link: {
