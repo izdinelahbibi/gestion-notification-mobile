@@ -4,7 +4,9 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated, Dimensi
 
 const { width } = Dimensions.get('window');
 
+// Ajouter l'icône "Home" en premier dans le tableau menuItems
 const menuItems = [
+  { title: 'Accueil', icon: '🏠', action: 'home' },
   { title: 'Profil', icon: '👤', action: 'profile' },
   { title: 'Cours', icon: '📚' },
   { title: 'Notes', icon: '📝' },
@@ -28,7 +30,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <View style={styles.navbar}>
         <TouchableOpacity onPress={toggleMenu} style={styles.hamburgerButton}>
           <View style={styles.line} />
@@ -45,6 +47,7 @@ const HomeScreen = ({ navigation }) => {
           <View style={styles.line} />
           <View style={styles.line} />
         </TouchableOpacity>
+
         {menuItems.map((item, index) => (
           <TouchableOpacity
             key={index}
@@ -53,7 +56,9 @@ const HomeScreen = ({ navigation }) => {
               if (item.action === 'logout') {
                 navigation.navigate('Login');
               } else if (item.action === 'profile') {
-                navigation.navigate('Profile'); // Remplacez par la navigation vers le profil
+                navigation.navigate('Profile');
+              } else if (item.action === 'home') {
+                navigation.navigate('Home');
               } else {
                 alert(`${item.title} clicked!`);
               }
@@ -67,7 +72,7 @@ const HomeScreen = ({ navigation }) => {
         ))}
       </Animated.View>
 
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.contentContainer}>
         <Text style={styles.title}>Bienvenue, étudiant !</Text>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Annonces</Text>
@@ -84,14 +89,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f4f8',
-    paddingHorizontal: 20,
-    paddingTop: 20,
   },
   navbar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#35475e',
+    backgroundColor: '#004085',
     paddingHorizontal: 15,
     paddingVertical: 12,
   },
@@ -104,31 +107,28 @@ const styles = StyleSheet.create({
   line: {
     width: 25,
     height: 3,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     marginVertical: 2,
     borderRadius: 2,
   },
   navTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#f0f4f8',
+    color: '#ffffff',
     letterSpacing: 1,
-    textShadowColor: '#2d3748',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
   title: {
     fontSize: 26,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#2d3748',
-    marginBottom: 20,
+    color: '#003057',
+    marginVertical: 20,
   },
   section: {
     marginVertical: 15,
     padding: 20,
     borderRadius: 10,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
@@ -137,12 +137,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#4a5568',
+    color: '#0056b3',
     marginBottom: 10,
   },
   text: {
     fontSize: 16,
-    color: '#718096',
+    color: '#495057',
   },
   sidebar: {
     position: 'absolute',
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     left: 0,
     width: 180,
     height: '100%',
-    backgroundColor: '#2c5282',
+    backgroundColor: '#002855',
     paddingTop: 10,
     zIndex: 10,
   },
@@ -172,6 +172,11 @@ const styles = StyleSheet.create({
     color: '#e2e8f0',
     textAlign: 'left',
     marginLeft: 10,
+  },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
 });
 
