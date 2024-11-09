@@ -1,14 +1,14 @@
-import { Link } from '@react-navigation/native'; // Assurez-vous que vous importez Link si nécessaire.
+import { Link } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated, Dimensions } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
-// Ajouter l'icône "Home" en premier dans le tableau menuItems
+// Adding "Home" as the first icon in the menu items array
 const menuItems = [
   { title: 'Accueil', icon: '🏠', action: 'home' },
   { title: 'Profil', icon: '👤', action: 'profile' },
-  { title: 'Cours', icon: '📚' },
+  { title: 'Cours', icon: '📚', action: 'courses' }, // Adding action for "Cours"
   { title: 'Notes', icon: '📝' },
   { title: 'Classe', icon: '🏫' },
   { title: 'Emploi', icon: '📅' },
@@ -59,6 +59,8 @@ const HomeScreen = ({ navigation }) => {
                 navigation.navigate('Profile');
               } else if (item.action === 'home') {
                 navigation.navigate('Home');
+              } else if (item.action === 'courses') {
+                navigation.navigate('CourseScreen'); // Navigate to CourseScreen when "Cours" is clicked
               } else {
                 alert(`${item.title} clicked!`);
               }

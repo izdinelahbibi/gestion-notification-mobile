@@ -7,40 +7,52 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'default_secret_key'; // Remplacez par une clé sécurisée en production
+const JWT_SECRET = process.env.JWT_SECRET || 'default_secret_key'; // Replace with a secure key in production
 
 // Middleware
-app.use(cors());  // Accepte toutes les origines pour les tests; en production, spécifiez l'origine
+app.use(cors());  // Allows all origins for testing; specify origin in production
 app.use(express.json());
 
-// Connexion MySQL
+// MySQL Connection
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',     // Remplacez par votre nom d'utilisateur MySQL
-  password: '', // Remplacez par votre mot de passe MySQL
+  user: 'root',     // Replace with your MySQL username
+  password: 'root', // Replace with your MySQL password
   database: 'user_database'
 });
 
 db.connect((err) => {
   if (err) {
-    console.error('Erreur de connexion à MySQL:', err);
+    console.error('MySQL connection error:', err);
     return;
   }
-  console.log('Connecté à MySQL');
+  console.log('Connected to MySQL');
 });
 
-// Route d'inscription
+// Route pour récupérer les fichiers téléchargés
+app.get('/api/courses', (req, res) => {
+  const query = 'SELECT * FROM uploaded_files ORDER BY uploaded_at DESC';
+  
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erreur lors de la récupération des fichiers.' });
+    }
+    res.json(results);
+  });
+});
+
+// Register route
 app.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
-    return res.status(400).json({ error: 'Tous les champs sont requis' });
+    return res.status(400).json({ error: 'All fields are required' });
   }
 
   try {
     db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
       if (results.length > 0) {
-        return res.status(400).json({ error: 'Utilisateur déjà existant' });
+        return res.status(400).json({ error: 'User already exists' });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -50,43 +62,43 @@ app.post('/register', async (req, res) => {
         [username, email, hashedPassword],
         (error) => {
           if (error) {
-            return res.status(500).json({ error: 'Erreur de la base de données' });
+            return res.status(500).json({ error: 'Database error' });
           }
-          res.status(201).json({ message: 'Utilisateur enregistré avec succès' });
+          res.status(201).json({ message: 'User registered successfully' });
         }
       );
     });
   } catch (error) {
-    res.status(500).json({ error: 'Erreur serveur' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// Route de connexion
+// Login route
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ error: 'Email et mot de passe requis' });
+    return res.status(400).json({ error: 'Email and password are required' });
   }
 
   db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
     if (results.length === 0) {
-      return res.status(400).json({ error: 'Utilisateur non trouvé' });
+      return res.status(400).json({ error: 'User not found' });
     }
 
     const user = results[0];
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({ error: 'Mot de passe incorrect' });
+      return res.status(400).json({ error: 'Incorrect password' });
     }
 
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
-    res.json({ success: true, message: 'Connexion réussie', token });
+    res.json({ success: true, message: 'Login successful', token });
   });
 });
 
-// Démarrer le serveur
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Serveur en cours d'exécution sur ${PORT}`);
+  console.log(`Server running on ${PORT}`);
 });
