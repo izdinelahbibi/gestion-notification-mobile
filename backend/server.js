@@ -31,13 +31,25 @@ db.connect((err) => {
 
 // Route pour récupérer les fichiers téléchargés
 app.get('/api/courses', (req, res) => {
-  const query = 'SELECT * FROM uploaded_files ORDER BY uploaded_at DESC';
+  const query = 'SELECT * FROM uploaded_files ORDER BY uploaded_at ASC';
   
   db.query(query, (err, results) => {
     if (err) {
       return res.status(500).json({ error: 'Erreur lors de la récupération des fichiers.' });
     }
     res.json(results);
+  });
+});
+
+// Route pour récupérer les notes
+app.get('/api/notes', (req, res) => {
+  const query = 'SELECT * FROM notes ORDER BY created_at DESC'; // Récupérer les notes, triées par date
+
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erreur lors de la récupération des notes.' });
+    }
+    res.json(results); // Envoie les notes au frontend
   });
 });
 

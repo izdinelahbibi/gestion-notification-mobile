@@ -7,7 +7,7 @@ const CourseScreen = () => {
 
   // Charger les fichiers téléchargés depuis le serveur
   useEffect(() => {
-    fetch('http://192.168.37.231:3000/api/courses')
+    fetch('http://192.168.99.231:3000/api/courses')
       .then((response) => response.json())
       .then((data) => setCourses(data))
       .catch((error) => console.error('Erreur de chargement des fichiers:', error));
@@ -21,10 +21,7 @@ const CourseScreen = () => {
         <Text>Aucun cours téléchargé pour le moment.</Text>
       ) : (
         <View style={{ marginTop: 20 }}>
-          <Text>ID</Text>
-          <Text>Nom du Fichier</Text>
-          <Text>Chemin du Fichier</Text>
-          <Text>Date de Téléchargement</Text>
+          
           {courses.map((course) => (
             <View key={course.id} style={{ marginVertical: 10 }}>
               <Text>{course.id}</Text>

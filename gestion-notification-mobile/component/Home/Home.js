@@ -1,4 +1,3 @@
-import { Link } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated, Dimensions } from 'react-native';
 
@@ -8,8 +7,8 @@ const { width } = Dimensions.get('window');
 const menuItems = [
   { title: 'Accueil', icon: '🏠', action: 'home' },
   { title: 'Profil', icon: '👤', action: 'profile' },
-  { title: 'Cours', icon: '📚', action: 'courses' }, // Adding action for "Cours"
-  { title: 'Notes', icon: '📝' },
+  { title: 'Cours', icon: '📚', action: 'courses' },
+  { title: 'Notes', icon: '📝', action: 'notes' }, // Action for "Notes"
   { title: 'Classe', icon: '🏫' },
   { title: 'Emploi', icon: '📅' },
   { title: 'Nouveau', icon: '➕' },
@@ -60,7 +59,9 @@ const HomeScreen = ({ navigation }) => {
               } else if (item.action === 'home') {
                 navigation.navigate('Home');
               } else if (item.action === 'courses') {
-                navigation.navigate('CourseScreen'); // Navigate to CourseScreen when "Cours" is clicked
+                navigation.navigate('CourseScreen'); // Navigate to CourseScreen
+              } else if (item.action === 'notes') {
+                navigation.navigate('NotesScreen'); // Navigate to NotesScreen
               } else {
                 alert(`${item.title} clicked!`);
               }
