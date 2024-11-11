@@ -10,20 +10,20 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret_key'; // Replace with a secure key in production
 
 // Middleware
-app.use(cors());  // Allows all origins for testing; specify origin in production
+app.use(cors());  // Accepte toutes les origines pour les tests; en production, spécifiez l'origine
 app.use(express.json());
 
-// MySQL Connection
+// Connexion MySQL
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',     // Replace with your MySQL username
-  password: 'root', // Replace with your MySQL password
+  user: 'root',     // Remplacez par votre nom d'utilisateur MySQL
+  password: '', // Remplacez par votre mot de passe MySQL
   database: 'user_database'
 });
 
 db.connect((err) => {
   if (err) {
-    console.error('MySQL connection error:', err);
+    console.error('Erreur de connexion à MySQL:', err);
     return;
   }
   console.log('Connected to MySQL');
@@ -31,7 +31,7 @@ db.connect((err) => {
 
 // Route pour récupérer les fichiers téléchargés
 app.get('/api/courses', (req, res) => {
-  const query = 'SELECT * FROM uploaded_files ORDER BY uploaded_at ASC';
+  const query = 'SELECT * FROM uploaded_files ORDER BY uploaded_at DESC';
   
   db.query(query, (err, results) => {
     if (err) {
@@ -41,28 +41,19 @@ app.get('/api/courses', (req, res) => {
   });
 });
 
-// Route pour récupérer les notes
-app.get('/api/notes', (req, res) => {
-  const query = 'SELECT * FROM notes ORDER BY created_at DESC'; // Récupérer les notes, triées par date
-
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: 'Erreur lors de la récupération des notes.' });
-    }
-    res.json(results); // Envoie les notes au frontend
-  });
-});
-
 // Register route
 app.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, class: userClass } = req.body; // Capture 'class' from request body
 
-  if (!username || !email || !password) {
+  if (!username || !email || !password || !userClass) { // Check if all fields are provided
     return res.status(400).json({ error: 'All fields are required' });
   }
 
   try {
     db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: 'Database query error' });
+      }
       if (results.length > 0) {
         return res.status(400).json({ error: 'User already exists' });
       }
@@ -70,22 +61,23 @@ app.post('/register', async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       db.query(
-        'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-        [username, email, hashedPassword],
+        'INSERT INTO users (username, email, password, class) VALUES (?, ?, ?, ?)',
+        [username, email, hashedPassword, userClass], // Include userClass value here
         (error) => {
           if (error) {
-            return res.status(500).json({ error: 'Database error' });
+            return res.status(500).json({ error: 'Erreur de la base de données' });
           }
           res.status(201).json({ message: 'User registered successfully' });
         }
       );
     });
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Erreur serveur' });
   }
 });
 
-// Login route
+
+// Route de connexion
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
@@ -94,6 +86,9 @@ app.post('/login', (req, res) => {
   }
 
   db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
     if (results.length === 0) {
       return res.status(400).json({ error: 'User not found' });
     }
@@ -112,5 +107,5 @@ app.post('/login', (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+  console.log(`Serveur en cours d'exécution sur ${PORT}`);
 });

@@ -10,6 +10,7 @@ import {
   ActivityIndicator 
 } from 'react-native';
 import { TextInput, Button, HelperText, Title, useTheme } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker'; // Import the Picker
 import axios from 'axios';
 
 const Register = ({ navigation }) => {
@@ -17,6 +18,7 @@ const Register = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [classSelection, setClassSelection] = useState(''); // State for selected class
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const theme = useTheme();
@@ -40,15 +42,20 @@ const Register = ({ navigation }) => {
       setError('Le mot de passe doit contenir au moins 6 caractères.');
       return;
     }
+    if (!classSelection) {
+      setError('Veuillez sélectionner une classe.');
+      return;
+    }
 
     setError('');
     setLoading(true);
 
     try {
-      const response = await axios.post('http://192.168.99.231/register', {
+      const response = await axios.post('http://192.168.37.231/register', {
         username,
         email,
         password,
+        class: classSelection, // Include class in registration data
       });
 
       if (response.data.message) {
@@ -118,6 +125,28 @@ const Register = ({ navigation }) => {
             {error.includes('correspondent') ? error : ''}
           </HelperText>
 
+          {/* Picker for class selection */}
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={classSelection}
+              onValueChange={(itemValue) => setClassSelection(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Sélectionner une classe" value="" />
+              <Picker.Item label="TI11" value="TI11" />
+              <Picker.Item label="TI12" value="TI12" />
+              <Picker.Item label="TI13" value="TI13" />
+              <Picker.Item label="TI14" value="TI14" />
+              <Picker.Item label="DSI21" value="DSI21" />
+              <Picker.Item label="DSI22" value="DSI22" />
+              <Picker.Item label="DSI31" value="DSI31" />
+              <Picker.Item label="DSI32" value="DSI32" />
+            </Picker>
+            <HelperText type="error" visible={!classSelection && error.includes('classe')}>
+              {error.includes('classe') ? error : ''}
+            </HelperText>
+          </View>
+
           <View style={styles.buttonContainer}>
             <Button
               mode="contained"
@@ -168,6 +197,16 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 15,
     backgroundColor: '#f9fbe7', // Fond des champs
+  },
+  pickerContainer: {
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#00796b',
+    borderRadius: 8,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
   },
   buttonContainer: {
     overflow: 'hidden',

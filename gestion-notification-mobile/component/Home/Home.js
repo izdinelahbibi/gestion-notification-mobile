@@ -12,10 +12,10 @@ const menuItems = [
   { title: 'Classe', icon: '🏫' },
   { title: 'Emploi', icon: '📅' },
   { title: 'Nouveau', icon: '➕' },
-  { title: 'Déconnexion', icon: '🚪', action: 'logout' },
+  { title: 'Déconnexion', icon: '🚪', action: 'logout' }, // Nouveau bouton de déconnexion
 ];
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [translateX] = useState(new Animated.Value(-width));
 
@@ -38,8 +38,11 @@ const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
 
         <Text style={styles.navTitle}>Espace Étudiant</Text>
+
+        {/* Supprimer le bouton de profil ici */}
       </View>
 
+      {/* Sidebar */}
       <Animated.View style={[styles.sidebar, { transform: [{ translateX }] }]}>
         <TouchableOpacity onPress={toggleMenu} style={styles.sidebarHeader}>
           <View style={styles.line} />
@@ -53,7 +56,7 @@ const HomeScreen = ({ navigation }) => {
             style={styles.menuItem}
             onPress={() => {
               if (item.action === 'logout') {
-                navigation.navigate('Login');
+                navigation.navigate('Login'); // Naviguer vers la page de connexion
               } else if (item.action === 'profile') {
                 navigation.navigate('Profile');
               } else if (item.action === 'home') {
