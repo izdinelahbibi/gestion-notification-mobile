@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Or another icon set
 
-const { width } = Dimensions.get('window');
+// Get screen dimensions
+const { width, height } = Dimensions.get('window');
+
+// Factor for scaling elements depending on the screen size
+const scale = width / 375; // Use 375 as a base (e.g., iPhone 6)
 
 // Menu items array with titles, icon names, and actions for navigation
 const menuItems = [
@@ -106,94 +110,110 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f4f8',
+    justifyContent: 'flex-start', // Align items to the top
+    paddingTop: 50, // Push the content down (increase value to move more)
   },
   navbar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#004085',
-    paddingHorizontal: 15,
-    paddingVertical: 12,
+    paddingHorizontal: 15 * scale, // Adjust padding based on scale
+    paddingVertical: 12 * scale,
+    
   },
   hamburgerButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 30,
-    height: 30,
+    width: 30 * scale, // Adjust button size based on screen scale
+    height: 30 * scale,
   },
   line: {
-    width: 25,
-    height: 3,
+    width: 25 * scale,
+    height: 3 * scale,
     backgroundColor: '#ffffff',
-    marginVertical: 2,
+    marginVertical: 2 * scale,
     borderRadius: 2,
+    
   },
   navTitle: {
-    fontSize: 20,
+    fontSize: width * 0.05, // Adjust font size based on screen width
     fontWeight: '700',
     color: '#ffffff',
     letterSpacing: 1,
   },
   title: {
-    fontSize: 26,
+    fontSize: width * 0.07, // Adjust title size based on screen width
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#003057',
-    marginVertical: 20,
+    marginVertical: 20 * scale,
   },
   section: {
-    marginVertical: 15,
-    padding: 20,
-    borderRadius: 10,
+    marginVertical: 15 * scale, // Adjust margin based on screen scale
+    padding: 20 * scale, // Adjust padding based on scale
+    borderRadius: 10 * scale, // Adjust border radius for responsiveness
     backgroundColor: '#ffffff',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
+    
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 20 * scale, // Adjust title size for responsiveness
     fontWeight: 'bold',
     color: '#0056b3',
-    marginBottom: 10,
+    marginBottom: 10 * scale,
   },
   text: {
-    fontSize: 16,
+    fontSize: 16 * scale, // Adjust text size for better readability
     color: '#495057',
+    
   },
   sidebar: {
     position: 'absolute',
     top: 0,
     left: 0,
-    width: 180,
-    height: '100%',
+    width: '60%', // Sidebar width responsive to screen size
+    height: '150%',
+    heightTop: '150%',
     backgroundColor: '#002855',
-    paddingTop: 10,
+    paddingTop: 10 * scale,
     zIndex: 10,
+    justifyContent: 'flex-start', // Align items to the top
+    paddingTop: 50,
+    marginTop: 50,
   },
   sidebarHeader: {
     alignItems: 'flex-start',
-    paddingVertical: 15,
-    paddingHorizontal: 15,
+    paddingVertical: 15 * scale,
+    paddingHorizontal: 15 * scale,
     backgroundColor: 'transparent',
+    marginTop: -49,
+
+    
   },
   menuItem: {
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    marginVertical: 5,
+    paddingVertical: 15 * scale,
+    paddingHorizontal: 20 * scale,
+    marginVertical: 5 * scale,
     flexDirection: 'row',
     alignItems: 'center',
+    
+    
   },
   menuItemText: {
-    fontSize: 18,
+    fontSize: 18 * scale, // Adjust menu item text size
     color: '#e2e8f0',
     textAlign: 'left',
-    marginLeft: 10,
+    marginLeft: 10 * scale,
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingHorizontal: 20 * scale, // Adjust content padding
+    paddingTop: 20 * scale,
+    
   },
 });
 

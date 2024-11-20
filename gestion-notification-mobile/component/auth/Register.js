@@ -10,7 +10,7 @@ import {
   ActivityIndicator 
 } from 'react-native';
 import { TextInput, Button, HelperText, Title, useTheme } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker'; // Import the Picker
+import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 
 const Register = ({ navigation }) => {
@@ -18,10 +18,10 @@ const Register = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [classSelection, setClassSelection] = useState(''); // State for selected class
+  const [classSelection, setClassSelection] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const theme = useTheme();
+
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -47,19 +47,19 @@ const Register = ({ navigation }) => {
       return;
     }
 
-    setError('');
+    setError(''); // Clear previous error messages
     setLoading(true);
 
     try {
-      const response = await axios.post('http://192.168.45.231/register', {
+      const response = await axios.post('http://192.168.45.231:3000/register', {
         username,
         email,
         password,
-        class: classSelection, // Include class in registration data
+        class: classSelection,
       });
 
       if (response.data.message) {
-        navigation.navigate('Login');  // Navigation directe vers la page Login
+        navigation.navigate('Login');  // Navigate to login if registration is successful
       }
     } catch (error) {
       setError(error.response?.data?.error || 'Une erreur est survenue');
@@ -174,18 +174,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#e0f7fa', // Arrière-plan principal
+    backgroundColor: '#e0f7fa',
   },
   formContainer: {
     marginHorizontal: 20,
     padding: 20,
-    backgroundColor: '#ffffff', // Fond opaque
+    backgroundColor: '#ffffff',
     borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 6,
-    elevation: 8, // Élément en relief pour Android
+    elevation: 8,
   },
   title: {
     textAlign: 'center',
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 15,
-    backgroundColor: '#f9fbe7', // Fond des champs
+    backgroundColor: '#f9fbe7',
   },
   pickerContainer: {
     marginBottom: 15,
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 10,
-    backgroundColor: '#00796b', // Couleur du bouton
+    backgroundColor: '#00796b',
     borderRadius: 12,
   },
   link: {

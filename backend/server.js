@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
@@ -42,7 +42,7 @@ app.get('/api/courses', (req, res) => {
 });
 // Route to fetch annonces
 app.get('/api/annonces', (req, res) => {
-  db.query('SELECT * FROM annonces ORDER BY date DESC', (err, results) => {
+  db.query('SELECT * FROM annonces ORDER BY created_at DESC', (err, results) => {
     if (err) {
       console.error('Error fetching annonces:', err);
       return res.status(500).send('Server error');
@@ -51,42 +51,37 @@ app.get('/api/annonces', (req, res) => {
   });
 });
 
-// Register route
+// Route pour l'inscription
 app.post('/register', async (req, res) => {
-  const { username, email, password, class: userClass } = req.body; // Capture 'class' from request body
+  console.log('Données reçues :', req.body);
+  const { username, email, password, class: userClass } = req.body;
 
-  if (!username || !email || !password || !userClass) { // Check if all fields are provided
-    return res.status(400).json({ error: 'All fields are required' });
+  if (!username || !email || !password || !userClass) {
+    return res.status(400).json({ error: 'Tous les champs sont requis.' });
   }
 
   try {
-    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
-      if (err) {
-        return res.status(500).json({ error: 'Database query error' });
-      }
-      if (results.length > 0) {
-        return res.status(400).json({ error: 'User already exists' });
-      }
+    // Vérifier si l'utilisateur existe déjà
+    const [rows] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+    if (rows.length > 0) {
+      return res.status(400).json({ error: 'Cet e-mail est déjà utilisé.' });
+    }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+    // Hacher le mot de passe
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      db.query(
-        'INSERT INTO users (username, email, password, class) VALUES (?, ?, ?, ?)',
-        [username, email, hashedPassword, userClass], // Include userClass value here
-        (error) => {
-          if (error) {
-            return res.status(500).json({ error: 'Erreur de la base de données' });
-          }
-          res.status(201).json({ message: 'User registered successfully' });
-        }
-      );
-    });
+    // Insérer le nouvel utilisateur
+    await db.promise().query(
+      'INSERT INTO users (username, email, password, class) VALUES (?, ?, ?, ?)',
+      [username, email, hashedPassword, userClass]
+    );
+
+    res.status(201).json({ message: 'Utilisateur enregistré avec succès.' });
   } catch (error) {
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error('Erreur lors de l\'inscription :', error);
+    res.status(500).json({ error: 'Erreur interne du serveur.' });
   }
 });
-
-
 // Route de connexion
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
