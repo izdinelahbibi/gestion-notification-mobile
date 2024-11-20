@@ -40,6 +40,16 @@ app.get('/api/courses', (req, res) => {
     res.json(results);
   });
 });
+// Route to fetch annonces
+app.get('/api/annonces', (req, res) => {
+  db.query('SELECT * FROM annonces ORDER BY date DESC', (err, results) => {
+    if (err) {
+      console.error('Error fetching annonces:', err);
+      return res.status(500).send('Server error');
+    }
+    res.json(results);
+  });
+});
 
 // Register route
 app.post('/register', async (req, res) => {

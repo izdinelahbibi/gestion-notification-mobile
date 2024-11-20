@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated, Dimensions } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Or another icon set
 
 const { width } = Dimensions.get('window');
 
-// Adding "Home" as the first icon in the menu items array
+// Menu items array with titles, icon names, and actions for navigation
 const menuItems = [
-  { title: 'Accueil', icon: '🏠', action: 'home' },
-  { title: 'Profil', icon: '👤', action: 'profile' },
-  { title: 'Cours', icon: '📚', action: 'courses' },
-  { title: 'Notes', icon: '📝', action: 'notes' }, // Action for "Notes"
-  { title: 'Classe', icon: '🏫' },
-  { title: 'Emploi', icon: '📅' },
-  { title: 'Nouveau', icon: '➕' },
-  { title: 'Déconnexion', icon: '🚪', action: 'logout' }, // Nouveau bouton de déconnexion
+  { title: 'Accueil', icon: 'home', action: 'home' },
+  { title: 'Profil', icon: 'user', action: 'profile' },
+  { title: 'Cours', icon: 'book', action: 'courses' },
+  { title: 'Notes', icon: 'pencil', action: 'notes' },
+  { title: 'Classe', icon: 'building', action: 'class' },
+  { title: 'Emploi', icon: 'calendar', action: 'schedule' },
+  { title: 'Nouveau', icon: 'plus', action: 'new' },
+  { title: 'Annonces', icon: 'bullhorn', action: 'announcements' },
+  { title: 'Déconnexion', icon: 'sign-out', action: 'logout' },
 ];
 
-const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
+const HomeScreen = ({ navigation }) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [translateX] = useState(new Animated.Value(-width));
 
@@ -28,6 +30,33 @@ const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
     }).start();
   };
 
+  const handleMenuItemPress = (action) => {
+    switch (action) {
+      case 'home':
+        navigation.navigate('Home');
+        break;
+      case 'profile':
+        navigation.navigate('Profile');
+        break;
+      case 'courses':
+        navigation.navigate('CourseScreen');
+        break;
+      case 'notes':
+        navigation.navigate('NotesScreen');
+        break;
+      case 'announcements':
+        navigation.navigate('Annonce'); // Navigate to AnnonceScreen
+        break;
+      case 'logout':
+        navigation.navigate('Login'); // Navigate to Login
+        break;
+      default:
+        alert(`${action} clicked!`);
+        break;
+    }
+    toggleMenu();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>
@@ -38,8 +67,6 @@ const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
         </TouchableOpacity>
 
         <Text style={styles.navTitle}>Espace Étudiant</Text>
-
-        {/* Supprimer le bouton de profil ici */}
       </View>
 
       {/* Sidebar */}
@@ -54,26 +81,10 @@ const HomeScreen = ({ navigation }) => { // Ajoutez `navigation` comme prop
           <TouchableOpacity
             key={index}
             style={styles.menuItem}
-            onPress={() => {
-              if (item.action === 'logout') {
-                navigation.navigate('Login'); // Naviguer vers la page de connexion
-              } else if (item.action === 'profile') {
-                navigation.navigate('Profile');
-              } else if (item.action === 'home') {
-                navigation.navigate('Home');
-              } else if (item.action === 'courses') {
-                navigation.navigate('CourseScreen'); // Navigate to CourseScreen
-              } else if (item.action === 'notes') {
-                navigation.navigate('NotesScreen'); // Navigate to NotesScreen
-              } else {
-                alert(`${item.title} clicked!`);
-              }
-              toggleMenu();
-            }}
+            onPress={() => handleMenuItemPress(item.action)}
           >
-            <Text style={styles.menuItemText}>
-              {item.icon} {item.title}
-            </Text>
+            <Icon name={item.icon} size={24} color="#e2e8f0" />
+            <Text style={styles.menuItemText}>{item.title}</Text>
           </TouchableOpacity>
         ))}
       </Animated.View>
