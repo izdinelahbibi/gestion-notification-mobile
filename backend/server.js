@@ -51,6 +51,7 @@ app.get('/api/annonces', (req, res) => {
   });
 });
 
+
 // Route pour l'inscription
 app.post('/register', async (req, res) => {
   console.log('Données reçues :', req.body);
@@ -107,6 +108,21 @@ app.post('/login', (req, res) => {
 
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
     res.json({ success: true, message: 'Login successful', token });
+  });
+});
+
+// Route pour récupérer les notes
+
+app.get('/api/notes', (req, res) => {
+  const query = 'SELECT * FROM notes';
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Erreur lors de la récupération des notes:', err);
+      res.status(500).send('Erreur du serveur');
+    } else {
+      res.json(results);
+    }
   });
 });
 
