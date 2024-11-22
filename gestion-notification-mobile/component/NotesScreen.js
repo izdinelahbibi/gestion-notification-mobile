@@ -1,37 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, SafeAreaView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 
 const NotesScreen = () => {
-  const [notes, setNotes] = useState([]); // Etat pour stocker les notes
-  const [loading, setLoading] = useState(true); // Etat pour gérer le chargement
-  const [error, setError] = useState(null); // Etat pour gérer les erreurs
+  const [notes, setNotes] = useState([]);  // Stocker les notes
+  const [loading, setLoading] = useState(true);  // Gérer l'état de chargement
+  const [error, setError] = useState(null);  // Gérer les erreurs
 
   // Récupérer les données depuis l'API
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const response = await axios.get('http://192.168.1.231:3000/api/notes'); // Remplacez par l'URL de votre API
-        setNotes(response.data); // Enregistrez les notes dans l'état
+        const response = await axios.get('http://192.168.1.231:3000/api/notes'); // Changez l'URL si nécessaire
+        setNotes(response.data);  // Enregistrez les notes dans le state
       } catch (err) {
-        setError('Une erreur est survenue lors du chargement des notes');
+        setError('Erreur lors du chargement des notes');
       } finally {
-        setLoading(false); // Fin du chargement
+        setLoading(false);
       }
     };
 
     fetchNotes();
-  }, []);
+  }, []);  // Le tableau vide signifie que cette fonction se lance uniquement une fois après le premier rendu
 
-  // Fonction pour afficher chaque élément de la liste
+  // Fonction de rendu pour chaque élément de la liste
   const renderItem = ({ item }) => (
-    <View style={styles.noteContainer}>
-      <Text style={styles.text}>ID: {item.id}</Text>
-      <Text style={styles.text}>Utilisateur ID: {item.user_id}</Text>
-      <Text style={styles.text}>Note: {item.note}</Text>
-      <Text style={styles.text}>Matière: {item.subject}</Text>
-      <Text style={styles.text}>Type d'évaluation: {item.assessment_type}</Text>
-    </View>
+    <TouchableOpacity style={styles.noteContainer} onPress={() => alert('Élément sélectionné')}>
+      <View>
+        <Text style={styles.text}>Nom Etudiant: {item.username}</Text>
+        <Text style={styles.text}>Note: {item.note}</Text>
+        <Text style={styles.text}>Matière: {item.subject}</Text>
+        <Text style={styles.text}>Type d'évaluation: {item.assessment_type}</Text>
+      </View>
+    </TouchableOpacity>
   );
 
   if (loading) {
@@ -75,7 +76,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    marginBottom: 4,
   },
   errorText: {
     color: 'red',

@@ -111,18 +111,16 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Route pour récupérer les notes
-
+// Route pour récupérer les notes depuis la base de données
 app.get('/api/notes', (req, res) => {
-  const query = 'SELECT * FROM notes';
-
+  const query = 
+  ' SELECT notes.id, notes.note, notes.subject, notes.assessment_type, users.username FROM notes JOIN users ON notes.user_id = users.id;'
+  // Remplacez par votre table de notes
   db.query(query, (err, results) => {
     if (err) {
-      console.error('Erreur lors de la récupération des notes:', err);
-      res.status(500).send('Erreur du serveur');
-    } else {
-      res.json(results);
+      return res.status(500).send('Erreur de récupération des notes');
     }
+    res.json(results);
   });
 });
 
