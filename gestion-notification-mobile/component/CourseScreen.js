@@ -7,7 +7,7 @@ const CourseScreen = () => {
 
   // Charger les fichiers téléchargés depuis le serveur
   useEffect(() => {
-    fetch('http://192.168.45.231:3000/api/courses')
+    fetch('http://192.168.1.231:3000/api/courses')
       .then((response) => response.json())
       .then((data) => setCourses(data))
       .catch((error) => console.error('Erreur de chargement des fichiers:', error));

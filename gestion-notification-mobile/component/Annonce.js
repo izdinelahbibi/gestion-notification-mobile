@@ -10,7 +10,7 @@ const AnnonceScreen = () => {
   useEffect(() => {
     const fetchAnnonces = async () => {
       try {
-        const response = await fetch('http://192.168.45.231:3000/api/annonces');
+        const response = await fetch('http://192.168.1.231:3000/api/annonces');
 
         // Check if the response is successful
         if (!response.ok) {

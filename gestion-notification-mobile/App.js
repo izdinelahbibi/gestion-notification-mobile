@@ -6,6 +6,8 @@ import Register from './component/auth/Register';
 import Home from './component/Home/Home';
 import CourseScreen from './component/CourseScreen';
 import Annonce from './component/Annonce';
+import NotesScreen from './component/NotesScreen';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +27,7 @@ export default function App() {
         />
         <Stack.Screen name="CourseScreen" component={CourseScreen} />
         <Stack.Screen name="Annonce" component={Annonce} />
+        <Stack.Screen name="NotesScreen" component={NotesScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
