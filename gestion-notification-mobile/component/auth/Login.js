@@ -26,7 +26,7 @@ const Login = ({ navigation }) => {
     setLoading(true);
     console.log('Tentative de connexion avec:', { email, password });
     try {
-      const response = await fetch('http://192.168.1.231:3000/login', {
+      const response = await fetch('http://192.168.58.73:3000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

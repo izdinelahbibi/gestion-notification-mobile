@@ -11,7 +11,7 @@ const NotesScreen = () => {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const response = await axios.get('http://192.168.1.231:3000/api/notes'); // Changez l'URL si nécessaire
+        const response = await axios.get('http://192.168.58.73:3000/api/notes'); // Changez l'URL si nécessaire
         setNotes(response.data);  // Enregistrez les notes dans le state
       } catch (err) {
         setError('Erreur lors du chargement des notes');
