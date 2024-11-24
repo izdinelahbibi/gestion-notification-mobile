@@ -7,7 +7,7 @@ import Home from './component/Home/Home';
 import CourseScreen from './component/CourseScreen';
 import Annonce from './component/Annonce';
 import NotesScreen from './component/NotesScreen';
-
+import Profile from './component/Home/Profile'; // Import Profile
 
 const Stack = createNativeStackNavigator();
 
@@ -21,14 +21,16 @@ export default function App() {
           name="Home" 
           component={Home} 
           options={{
-            headerShown: false, // Cache la barre de navigation (texte et flèche)
-            gestureEnabled: false // Empêche la possibilité de revenir en arrière avec le geste
+            headerShown: false,
+            gestureEnabled: false,
           }} 
         />
         <Stack.Screen name="CourseScreen" component={CourseScreen} />
         <Stack.Screen name="Annonce" component={Annonce} />
         <Stack.Screen name="NotesScreen" component={NotesScreen} />
+        <Stack.Screen name="Profile" component={Profile} /> 
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+

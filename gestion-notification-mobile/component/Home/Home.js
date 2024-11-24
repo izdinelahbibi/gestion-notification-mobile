@@ -11,7 +11,7 @@ const scale = width / 375; // Use 375 as a base (e.g., iPhone 6)
 // Menu items array with titles, icon names, and actions for navigation
 const menuItems = [
   { title: 'Accueil', icon: 'home', action: 'home' },
-  { title: 'Profil', icon: 'user', action: 'profile' },
+  { title: 'Profil', icon: 'user', action: 'Profile' },
   { title: 'Cours', icon: 'book', action: 'courses' },
   { title: 'Notes', icon: 'pencil', action: 'notes' },
   { title: 'Classe', icon: 'building', action: 'class' },
@@ -35,31 +35,32 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleMenuItemPress = (action) => {
-    switch (action) {
-      case 'home':
-        navigation.navigate('Home');
-        break;
-      case 'profile':
-        navigation.navigate('Profile');
-        break;
-      case 'courses':
-        navigation.navigate('CourseScreen');
-        break;
-      case 'notes':
-        navigation.navigate('NotesScreen');
-        break;
-      case 'announcements':
-        navigation.navigate('Annonce'); // Navigate to AnnonceScreen
-        break;
-      case 'logout':
-        navigation.navigate('Login'); // Navigate to Login
-        break;
-      default:
-        alert(`${action} clicked!`);
-        break;
-    }
-    toggleMenu();
-  };
+  switch (action) {
+    case 'home':
+      navigation.navigate('Home');
+      break;
+    case 'Profile': // Corrigé pour naviguer vers la page Profil
+      navigation.navigate('Profile'); 
+      break;
+    case 'courses':
+      navigation.navigate('CourseScreen');
+      break;
+    case 'notes':
+      navigation.navigate('NotesScreen');
+      break;
+    case 'announcements':
+      navigation.navigate('Annonce');
+      break;
+    case 'logout':
+      navigation.navigate('Login');
+      break;
+    default:
+      console.warn(`Action "${action}" non reconnue !`);
+      break;
+  }
+  toggleMenu();
+};
+
 
   return (
     <View style={styles.container}>
