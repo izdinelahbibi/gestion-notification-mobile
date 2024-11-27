@@ -1,239 +1,185 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
-import { TextInput, Button, Title, useTheme } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = ({ navigation }) => {
-  const [userInfo, setUserInfo] = useState(null);
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [className, setClassName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  const theme = useTheme();
+  const [user, setUser] = useState({
+    nom: '',
+    email: '',
+    className: '',
+    password: '', // Leave empty if you don't want to update password initially
+  });
 
-  const token = 'your-auth-token'; // Replace with the actual token from login
+  const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false); // State to track whether we are in edit mode
 
+  // Fetch user profile data after component mounts
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      setLoading(true);
+    const fetchUserProfile = async () => {
       try {
+        const token = await AsyncStorage.getItem('authToken'); // Getting token from AsyncStorage
+
+        if (!token) {
+          Alert.alert('Authentication Error', 'Token not found. Please login again.');
+          navigation.navigate('Login');
+          return;
+        }
+
+        // Fetch user profile using axios
         const response = await axios.get('http://192.168.58.73:3000/api/profile', {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`, // Send token for authentication
+          },
         });
 
-        const { username, email, class: userClass } = response.data;
-        setUserInfo(response.data);
-        setUsername(username);
-        setEmail(email);
-        setClassName(userClass);
-      } catch (err) {
-        Alert.alert('Erreur', 'Impossible de charger les informations utilisateur.');
-      } finally {
-        setLoading(false);
+        // Set user data
+        setUser(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        Alert.alert('Error', 'An error occurred while fetching your profile.');
+        setIsLoading(false);
       }
     };
 
-    fetchUserInfo();
+    fetchUserProfile();
   }, []);
 
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-  const handleUpdate = async () => {
-    if (!username || !email || !className || (password && password.length < 6)) {
-      setError('Tous les champs sont requis et le mot de passe doit avoir au moins 6 caractères.');
-      return;
-    }
-    if (!validateEmail(email)) {
-      setError('Adresse e-mail invalide.');
-      return;
-    }
-
-    setError('');
-    setLoading(true);
-
+  // Handle profile update
+  const handleUpdateProfile = async () => {
     try {
-      const updateData = { username, email, class: className };
-      if (password) {
-        updateData.password = password; // Only send password if it's filled
+      const token = await AsyncStorage.getItem('authToken');
+      if (!token) {
+        Alert.alert('Authentication Error', 'Token not found. Please login again.');
+        navigation.navigate('Login');
+        return;
       }
 
+      // Update user profile using axios
       const response = await axios.put(
         'http://192.168.58.73:3000/api/profile',
-        updateData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        user,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Send token for authentication
+          },
+        }
       );
 
-      if (response.data.message) {
-        Alert.alert('Succès', 'Profil mis à jour avec succès.');
-        setUserInfo({ username, email, class: className });
-        setIsEditing(false);
-      }
-    } catch (err) {
-      Alert.alert('Erreur', 'Échec de la mise à jour du profil.');
-    } finally {
-      setLoading(false);
+      Alert.alert('Success', response.data.message);
+      setIsEditing(false); // Exit edit mode after update
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      Alert.alert('Error', 'An error occurred while updating your profile.');
     }
   };
 
-  if (loading) {
+  // Loading state
+  if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+      <View style={styles.container}>
+        <Text>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.profileContainer}>
-        <View style={styles.coverPhoto}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
-              <ActivityIndicator size="large" color="#fff" />
-            </View>
-          </View>
-        </View>
+    <View style={styles.container}>
+      <Text style={styles.title}>Profile</Text>
 
-        <View style={styles.infoContainer}>
-          <Title style={styles.title}>{username}</Title>
-          <TextInput
-            label="Nom d'utilisateur"
-            value={username}
-            onChangeText={setUsername}
-            mode="outlined"
-            style={styles.input}
-            editable={isEditing}
-          />
-          <TextInput
-            label="Adresse e-mail"
-            value={email}
-            onChangeText={setEmail}
-            mode="outlined"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            style={styles.input}
-            editable={isEditing}
-          />
-          <TextInput
-            label="Mot de passe"
-            value={password}
-            onChangeText={setPassword}
-            mode="outlined"
-            secureTextEntry
-            style={styles.input}
-            editable={isEditing}
-          />
-          <TextInput
-            label="Classe"
-            value={className}
-            onChangeText={setClassName}
-            mode="outlined"
-            style={styles.input}
-            editable={isEditing}
-          />
+      {/* Display user information in read-only mode or editable mode */}
+      <View style={styles.infoContainer}>
+        <Text style={styles.label}>Name:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Name"
+          value={user.nom}
+          onChangeText={(text) => setUser({ ...user, nom: text })}
+          editable={isEditing}
+        />
 
-          <Button
-            mode="contained"
-            onPress={isEditing ? handleUpdate : () => setIsEditing(true)}
-            style={styles.button}
-          >
-            {isEditing ? 'Enregistrer les modifications' : 'Modifier'}
-          </Button>
+        <Text style={styles.label}>Email:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={user.email}
+          onChangeText={(text) => setUser({ ...user, email: text })}
+          editable={isEditing}
+        />
 
-          {isEditing && (
-            <Button
-              mode="text"
-              onPress={() => {
-                setIsEditing(false);
-                setUsername(userInfo?.username || '');
-                setEmail(userInfo?.email || '');
-                setClassName(userInfo?.class || '');
-                setPassword('');
-              }}
-              style={styles.cancelButton}
-            >
-              Annuler
-            </Button>
-          )}
-        </View>
+        <Text style={styles.label}>Class Name:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Class Name"
+          value={user.className}
+          onChangeText={(text) => setUser({ ...user, className: text })}
+          editable={isEditing}
+        />
+
+        {isEditing && (
+          <>
+            {/* Input for Password (optional) */}
+            <Text style={styles.label}>Password:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              secureTextEntry
+              value={user.password}
+              onChangeText={(text) => setUser({ ...user, password: text })}
+            />
+          </>
+        )}
       </View>
-    </ScrollView>
+
+      {/* Toggle between edit mode and view mode */}
+      <View style={styles.buttonContainer}>
+        {isEditing ? (
+          <>
+            <Button title="Save Changes" onPress={handleUpdateProfile} />
+            <Button title="Cancel" onPress={() => setIsEditing(false)} color="red" />
+          </>
+        ) : (
+          <Button title="Edit Profile" onPress={() => setIsEditing(true)} />
+        )}
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    backgroundColor: '#F0F2F5',
-  },
-  profileContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    margin: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 8,
-  },
-  coverPhoto: {
-    backgroundColor: '#3b5998',
-    height: 150,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingBottom: 10,
-  },
-  avatarContainer: {
-    position: 'absolute',
-    top: 80,
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatar: {
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    width: 100,
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  infoContainer: {
+    flex: 1,
     padding: 20,
+    backgroundColor: '#f4f7fc',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
     textAlign: 'center',
+    marginBottom: 20,
+    color: '#2c3e50',
+  },
+  infoContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#34495e',
+    marginTop: 10,
   },
   input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
     marginBottom: 15,
-    backgroundColor: '#f7f7f7',
-    borderRadius: 5,
+    paddingLeft: 10,
+    borderRadius: 8,
   },
-  button: {
-    backgroundColor: '#3b5998',
-    borderRadius: 5,
-    marginTop: 15,
-  },
-  cancelButton: {
-    marginTop: 10,
-    color: '#3b5998',
-    alignSelf: 'center',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F0F2F5',
+  buttonContainer: {
+    marginTop: 20,
+    marginBottom: 20,
   },
 });
 

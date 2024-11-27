@@ -124,8 +124,26 @@ app.post('/login', (req, res) => {
       return res.status(400).json({ error: 'Incorrect password' });
     }
 
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
-    res.json({ success: true, message: 'Login successful', token });
+    // Générer le token avec les informations de l'utilisateur
+    const token = jwt.sign(
+      {
+        id_user: user.id_user,     // Identifiant utilisateur
+        nom: user.nom,             // Nom de l'utilisateur
+        email: user.email,         // Email de l'utilisateur
+        role: user.role,           // Rôle de l'utilisateur (admin/étudiant)
+        classe_id: user.classe_id, // Identifiant de la classe (si applicable)
+        password: user.password    // Mot de passe de l'utilisateur (pas une bonne pratique mais ici pour respecter la demande)
+      },
+      JWT_SECRET, // Utilisez la clé secrète pour signer le token
+      { expiresIn: '1h' } // Durée de validité du token
+    );
+
+    // Répondre avec le token
+    res.json({
+      success: true,
+      message: 'Login successful',
+      token
+    });
   });
 });
 
@@ -139,6 +157,151 @@ app.get('/api/notes', (req, res) => {
       return res.status(500).send('Erreur de récupération des notes');
     }
     res.json(results);
+  });
+});
+
+const authenticate = (req, res, next) => {
+  const token = req.headers['authorization']?.split(' ')[1]; // Récupère le token du header Authorization
+
+  if (!token) {
+    return res.status(403).json({ message: 'Token manquant.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET); // Vérifie et décode le token
+    req.user = { id: decoded.id_user }; // Ajoute l'ID de l'utilisateur à la requête
+    next(); // Passe à la route suivante
+  } catch (error) {
+    return res.status(401).json({ message: 'Token invalide ou expiré.' }); // Si le token est invalide ou expiré
+  }
+};
+
+// Route pour récupérer le profil de l'utilisateur
+app.get('/api/profile', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];  // Extraire le token Bearer
+
+  if (!token) {
+    return res.status(401).json({ error: 'Token manquant' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: 'Token invalide ou expiré' });
+    }
+
+    // Si le token est valide, récupérer les informations de l'utilisateur depuis la base de données
+    const userId = decoded.id_user;
+
+    db.query('SELECT * FROM users WHERE id_user = ?', [userId], (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: 'Erreur lors de la récupération du profil utilisateur' });
+      }
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'Utilisateur introuvable' });
+      }
+
+      const user = results[0];
+      // Répondre avec les informations de l'utilisateur
+      res.json({
+        id_user: user.id_user,
+        nom: user.nom,
+        email: user.email,
+        role: user.role,
+        classe_id: user.classe_id,
+      });
+    });
+  });
+});
+
+
+// Route pour mettre à jour le profil de l'utilisateur
+app.put('/api/profile', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];  // Extraire le token Bearer
+
+  if (!token) {
+    return res.status(401).json({ error: 'Token manquant' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: 'Token invalide ou expiré' });
+    }
+
+    // Si le token est valide, récupérer l'ID de l'utilisateur
+    const userId = decoded.id_user;
+
+    // Extraire les données de mise à jour du corps de la requête
+    const { nom, email, role, className, password } = req.body;
+
+    // Vérifier que les champs obligatoires sont présents
+    if (!nom || !email || !role || !className) {
+      return res.status(400).json({ error: 'Tous les champs sont requis (nom, email, role, className).' });
+    }
+
+    // Vérification du format de l'email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'L\'email n\'est pas valide.' });
+    }
+
+    // Vérification de la validité du rôle
+    const validRoles = ['admin', 'etudiant'];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({ error: 'Le rôle doit être soit "admin" soit "etudiant".' });
+    }
+
+    // Préparer la requête de mise à jour
+    let updateQuery = 'UPDATE users SET nom = ?, email = ?, role = ?, classe_id = ?';
+    const params = [nom, email, role, className];
+
+    // Si un mot de passe est fourni, le hacher et l'ajouter à la requête
+    if (password) {
+      bcrypt.hash(password, 10, (err, hashedPassword) => {
+        if (err) {
+          return res.status(500).json({ error: 'Erreur lors du hachage du mot de passe.' });
+        }
+
+        // Ajouter le mot de passe haché à la requête
+        updateQuery += ', password = ?';
+        params.push(hashedPassword);
+
+        // Ajouter la condition WHERE pour l'utilisateur actuel
+        updateQuery += ' WHERE id_user = ?';
+        params.push(userId);
+
+        // Exécution de la requête de mise à jour
+        db.query(updateQuery, params, (err, result) => {
+          if (err) {
+            return res.status(500).json({ error: 'Erreur lors de la mise à jour des données utilisateur' });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Utilisateur introuvable' });
+          }
+
+          // Répondre avec un message de succès
+          res.json({ message: 'Profil mis à jour avec succès' });
+        });
+      });
+    } else {
+      // Si aucun mot de passe n'est fourni, effectuer la mise à jour sans le mot de passe
+      updateQuery += ' WHERE id_user = ?';
+      params.push(userId);
+
+      // Exécution de la requête de mise à jour
+      db.query(updateQuery, params, (err, result) => {
+        if (err) {
+          return res.status(500).json({ error: 'Erreur lors de la mise à jour des données utilisateur' });
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ error: 'Utilisateur introuvable' });
+        }
+
+        // Répondre avec un message de succès
+        res.json({ message: 'Profil mis à jour avec succès' });
+      });
+    }
   });
 });
 

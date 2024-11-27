@@ -10,6 +10,7 @@ import {
   ActivityIndicator 
 } from 'react-native';
 import { Button, TextInput, Title } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -20,6 +21,13 @@ const Login = ({ navigation }) => {
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Erreur', 'Veuillez entrer votre e-mail et mot de passe.');
+      return;
+    }
+
+    // Simple email validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Erreur', 'L\'adresse e-mail est invalide.');
       return;
     }
 
@@ -37,6 +45,13 @@ const Login = ({ navigation }) => {
       const data = await response.json();
 
       if (response.ok) {
+        // Store token in AsyncStorage
+        await AsyncStorage.setItem('authToken', data.token); // Stocker le token ou une autre info pertinente
+
+        // Optionnellement, vous pouvez aussi stocker des infos utilisateur
+        await AsyncStorage.setItem('userEmail', email);
+
+        // Naviguer vers l'écran "Home"
         navigation.navigate('Home');
       } else {
         Alert.alert('Erreur', data.error || 'Email ou mot de passe incorrect.');
@@ -66,6 +81,7 @@ const Login = ({ navigation }) => {
             keyboardType="email-address"
             autoCapitalize="none"
             style={styles.input}
+            accessibilityLabel="Adresse e-mail"
           />
 
           <TextInput
@@ -75,6 +91,7 @@ const Login = ({ navigation }) => {
             secureTextEntry
             mode="outlined"
             style={styles.input}
+            accessibilityLabel="Mot de passe"
           />
 
           <View style={styles.buttonContainer}>
@@ -85,7 +102,9 @@ const Login = ({ navigation }) => {
               onPress={handleLogin}
               disabled={loading}
               style={[styles.button, { transform: [{ scale }] }]}
-              contentStyle={{ paddingVertical: 8 }}>
+              contentStyle={{ paddingVertical: 8 }}
+              accessibilityLabel="Se connecter"
+            >
               {loading ? <ActivityIndicator color="#fff" /> : "Se connecter"}
             </Button>
           </View>
@@ -93,7 +112,9 @@ const Login = ({ navigation }) => {
           <Button
             mode="text"
             onPress={() => navigation.navigate('Register')}
-            style={styles.link}>
+            style={styles.link}
+            accessibilityLabel="Pas de compte ? Inscrivez-vous"
+          >
             Pas de compte ? Inscrivez-vous
           </Button>
         </View>
