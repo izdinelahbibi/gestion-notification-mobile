@@ -51,8 +51,18 @@ app.get('/api/annonces', (req, res) => {
   });
 });
 
+app.get('/classes', async (req, res) => {
+  try {
+    const [rows] = await db.promise().query('SELECT * FROM classes');
+    res.status(200).json({ classes: rows });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des classes :', error);
+    res.status(500).json({ error: 'Erreur interne du serveur.' });
+  }
+});
 
-// Route pour l'inscription
+
+
 app.post('/register', async (req, res) => {
   console.log('Données reçues :', req.body);
   const { username, email, password, class: userClass } = req.body;
@@ -63,18 +73,25 @@ app.post('/register', async (req, res) => {
 
   try {
     // Vérifier si l'utilisateur existe déjà
-    const [rows] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
-    if (rows.length > 0) {
+    const [existingUsers] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+    if (existingUsers.length > 0) {
       return res.status(400).json({ error: 'Cet e-mail est déjà utilisé.' });
     }
+
+    // Récupérer l'ID de la classe
+    const [classRows] = await db.promise().query('SELECT id_classe FROM classes WHERE nom_classe = ?', [userClass]);
+    if (classRows.length === 0) {
+      return res.status(400).json({ error: 'Classe invalide.' });
+    }
+    const classeId = classRows[0].id_classe;
 
     // Hacher le mot de passe
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insérer le nouvel utilisateur
     await db.promise().query(
-      'INSERT INTO users (username, email, password, class) VALUES (?, ?, ?, ?)',
-      [username, email, hashedPassword, userClass]
+      'INSERT INTO users (nom, email, role, classe_id, password) VALUES (?, ?, ?, ?, ?)',
+      [username, email, 'etudiant', classeId, hashedPassword]
     );
 
     res.status(201).json({ message: 'Utilisateur enregistré avec succès.' });
@@ -83,6 +100,7 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ error: 'Erreur interne du serveur.' });
   }
 });
+
 // Route de connexion
 app.post('/login', (req, res) => {
   const { email, password } = req.body;

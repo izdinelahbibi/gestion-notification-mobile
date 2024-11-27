@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   StyleSheet, 
@@ -9,7 +9,7 @@ import {
   Alert, 
   ActivityIndicator 
 } from 'react-native';
-import { TextInput, Button, HelperText, Title, useTheme } from 'react-native-paper';
+import { TextInput, Button, HelperText, Title } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 
@@ -19,11 +19,25 @@ const Register = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [classSelection, setClassSelection] = useState('');
+  const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    // Récupérer les classes depuis le backend
+    const fetchClasses = async () => {
+      try {
+        const response = await axios.get('http://192.168.58.73:3000/classes');
+        setClasses(response.data.classes);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des classes :', error);
+      }
+    };
+    fetchClasses();
+  }, []);
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  
 
   const handleRegister = async () => {
     if (!username) {
@@ -46,21 +60,21 @@ const Register = ({ navigation }) => {
       setError('Veuillez sélectionner une classe.');
       return;
     }
-
+  
     setError(''); // Clear previous error messages
     setLoading(true);
-
+  
     try {
-
       const response = await axios.post('http://192.168.58.73:3000/register', {
         username,
         email,
         password,
-        class: classSelection,
+        class: classSelection, // Correspond au champ `nom_classe` dans la table `classes`
       });
-
+  
       if (response.data.message) {
-        navigation.navigate('Login');  // Navigate to login if registration is successful
+        Alert.alert('Succès', 'Compte créé avec succès');
+        navigation.navigate('Login');
       }
     } catch (error) {
       setError(error.response?.data?.error || 'Une erreur est survenue');
@@ -68,6 +82,7 @@ const Register = ({ navigation }) => {
       setLoading(false);
     }
   };
+  
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -85,9 +100,6 @@ const Register = ({ navigation }) => {
             mode="outlined"
             style={styles.input}
           />
-          <HelperText type="error" visible={!username && error.includes('utilisateur')}>
-            {error.includes('utilisateur') ? error : ''}
-          </HelperText>
 
           <TextInput
             label="Adresse e-mail"
@@ -98,9 +110,6 @@ const Register = ({ navigation }) => {
             autoCapitalize="none"
             style={styles.input}
           />
-          <HelperText type="error" visible={!validateEmail(email) && error.includes('e-mail')}>
-            {error.includes('e-mail') ? error : ''}
-          </HelperText>
 
           <TextInput
             label="Mot de passe"
@@ -110,9 +119,6 @@ const Register = ({ navigation }) => {
             mode="outlined"
             style={styles.input}
           />
-          <HelperText type="error" visible={password.length < 6 && error.includes('caractères')}>
-            {error.includes('caractères') ? error : ''}
-          </HelperText>
 
           <TextInput
             label="Confirmer le mot de passe"
@@ -122,48 +128,27 @@ const Register = ({ navigation }) => {
             mode="outlined"
             style={styles.input}
           />
-          <HelperText type="error" visible={password !== confirmPassword && error.includes('correspondent')}>
-            {error.includes('correspondent') ? error : ''}
-          </HelperText>
 
-          {/* Picker for class selection */}
+          {/* Picker pour la classe */}
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={classSelection}
               onValueChange={(itemValue) => setClassSelection(itemValue)}
-              style={styles.picker}
-            >
+              style={styles.picker}>
               <Picker.Item label="Sélectionner une classe" value="" />
-              <Picker.Item label="TI11" value="TI11" />
-              <Picker.Item label="TI12" value="TI12" />
-              <Picker.Item label="TI13" value="TI13" />
-              <Picker.Item label="TI14" value="TI14" />
-              <Picker.Item label="DSI21" value="DSI21" />
-              <Picker.Item label="DSI22" value="DSI22" />
-              <Picker.Item label="DSI31" value="DSI31" />
-              <Picker.Item label="DSI32" value="DSI32" />
+              {classes.map((cls) => (
+                <Picker.Item key={cls.id_classe} label={cls.nom_classe} value={cls.nom_classe} />
+              ))}
             </Picker>
-            <HelperText type="error" visible={!classSelection && error.includes('classe')}>
-              {error.includes('classe') ? error : ''}
-            </HelperText>
-          </View>
-
-          <View style={styles.buttonContainer}>
-            <Button
-              mode="contained"
-              onPress={handleRegister}
-              disabled={loading}
-              style={styles.button}
-              contentStyle={{ paddingVertical: 8 }}>
-              {loading ? <ActivityIndicator color="#fff" /> : "S'inscrire"}
-            </Button>
           </View>
 
           <Button
-            mode="text"
-            onPress={() => navigation.navigate('Login')}
-            style={styles.link}>
-            Déjà un compte ? Connectez-vous
+            mode="contained"
+            onPress={handleRegister}
+            disabled={loading}
+            style={styles.button}
+            contentStyle={{ paddingVertical: 8 }}>
+            {loading ? <ActivityIndicator color="#fff" /> : "S'inscrire"}
           </Button>
         </View>
       </KeyboardAvoidingView>
@@ -209,19 +194,10 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
   },
-  buttonContainer: {
-    overflow: 'hidden',
-    borderRadius: 12,
-  },
   button: {
     marginTop: 10,
     backgroundColor: '#00796b',
     borderRadius: 12,
-  },
-  link: {
-    marginTop: 10,
-    alignSelf: 'center',
-    color: '#00796b',
   },
 });
 
