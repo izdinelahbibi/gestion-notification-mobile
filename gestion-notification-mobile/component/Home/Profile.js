@@ -7,38 +7,38 @@ const Profile = ({ navigation }) => {
   const [user, setUser] = useState({
     nom: '',
     email: '',
-    className: '',
-    password: '', // Leave empty if you don't want to update password initially
+    className: '', // Vérifiez que ce champ est bien présent dans la réponse API
   });
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false); // State to track whether we are in edit mode
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Fetch user profile data after component mounts
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const token = await AsyncStorage.getItem('authToken'); // Getting token from AsyncStorage
-
+        const token = await AsyncStorage.getItem('authToken');
         if (!token) {
-          Alert.alert('Authentication Error', 'Token not found. Please login again.');
+          Alert.alert('Erreur d\'authentification', 'Token introuvable. Veuillez vous reconnecter.');
           navigation.navigate('Login');
           return;
         }
 
-        // Fetch user profile using axios
         const response = await axios.get('http://192.168.58.73:3000/api/profile', {
           headers: {
-            Authorization: `Bearer ${token}`, // Send token for authentication
+            Authorization: `Bearer ${token}`,
           },
         });
 
-        // Set user data
-        setUser(response.data);
+        // Assurez-vous que la réponse contient un champ 'className'
+        setUser({
+          nom: response.data.nom || '',
+          email: response.data.email || '',
+          className: response.data.className || 'Aucune classe', // Valeur par défaut si 'className' est manquant
+        });
+
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching user profile:', error);
-        Alert.alert('Error', 'An error occurred while fetching your profile.');
+        handleError(error);
         setIsLoading(false);
       }
     };
@@ -46,101 +46,107 @@ const Profile = ({ navigation }) => {
     fetchUserProfile();
   }, []);
 
-  // Handle profile update
+  const handleError = (error) => {
+    if (error.response && error.response.status === 401) {
+      Alert.alert('Erreur d\'authentification', 'Session expirée. Veuillez vous reconnecter.');
+      AsyncStorage.removeItem('authToken');
+      navigation.navigate('Login');
+    } else {
+      console.error('Erreur Axios :', error.message);
+      Alert.alert('Erreur', 'Une erreur s\'est produite lors de la récupération de votre profil.');
+    }
+  };
+
   const handleUpdateProfile = async () => {
     try {
       const token = await AsyncStorage.getItem('authToken');
       if (!token) {
-        Alert.alert('Authentication Error', 'Token not found. Please login again.');
+        Alert.alert('Erreur d\'authentification', 'Token introuvable. Veuillez vous reconnecter.');
         navigation.navigate('Login');
         return;
       }
 
-      // Update user profile using axios
+      // Validation des champs avant la mise à jour
+      if (!user.nom || !user.email || !user.className) {
+        Alert.alert('Erreur', 'Tous les champs doivent être remplis.');
+        return;
+      }
+
       const response = await axios.put(
         'http://192.168.58.73:3000/api/profile',
         user,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Send token for authentication
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      Alert.alert('Success', response.data.message);
-      setIsEditing(false); // Exit edit mode after update
+      Alert.alert('Succès', 'Profil mis à jour avec succès.');
+      setIsEditing(false);
     } catch (error) {
-      console.error('Error updating profile:', error);
-      Alert.alert('Error', 'An error occurred while updating your profile.');
+      handleError(error);
     }
   };
 
-  // Loading state
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <Text>Chargement...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
+      <Text style={styles.title}>Mon Profil</Text>
 
-      {/* Display user information in read-only mode or editable mode */}
       <View style={styles.infoContainer}>
-        <Text style={styles.label}>Name:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          value={user.nom}
-          onChangeText={(text) => setUser({ ...user, nom: text })}
-          editable={isEditing}
-        />
+        <Text style={styles.label}>Nom :</Text>
+        {isEditing ? (
+          <TextInput
+            style={styles.input}
+            placeholder="Nom"
+            value={user.nom}
+            onChangeText={(text) => setUser({ ...user, nom: text })}
+          />
+        ) : (
+          <Text>{user.nom}</Text>
+        )}
 
-        <Text style={styles.label}>Email:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={user.email}
-          onChangeText={(text) => setUser({ ...user, email: text })}
-          editable={isEditing}
-        />
+        <Text style={styles.label}>Email :</Text>
+        {isEditing ? (
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={user.email}
+            onChangeText={(text) => setUser({ ...user, email: text })}
+          />
+        ) : (
+          <Text>{user.email}</Text>
+        )}
 
-        <Text style={styles.label}>Class Name:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Class Name"
-          value={user.className}
-          onChangeText={(text) => setUser({ ...user, className: text })}
-          editable={isEditing}
-        />
-
-        {isEditing && (
-          <>
-            {/* Input for Password (optional) */}
-            <Text style={styles.label}>Password:</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              secureTextEntry
-              value={user.password}
-              onChangeText={(text) => setUser({ ...user, password: text })}
-            />
-          </>
+        <Text style={styles.label}>Nom de la classe :</Text>
+        {isEditing ? (
+          <TextInput
+            style={styles.input}
+            placeholder="Nom de la classe"
+            value={user.className}
+            onChangeText={(text) => setUser({ ...user, className: text })}
+          />
+        ) : (
+          <Text>{user.className}</Text> // Affichage du nom de la classe
         )}
       </View>
 
-      {/* Toggle between edit mode and view mode */}
       <View style={styles.buttonContainer}>
         {isEditing ? (
           <>
-            <Button title="Save Changes" onPress={handleUpdateProfile} />
-            <Button title="Cancel" onPress={() => setIsEditing(false)} color="red" />
+            <Button title="Sauvegarder les modifications" onPress={handleUpdateProfile} />
+            <Button title="Annuler" onPress={() => setIsEditing(false)} color="red" />
           </>
         ) : (
-          <Button title="Edit Profile" onPress={() => setIsEditing(true)} />
+          <Button title="Modifier le profil" onPress={() => setIsEditing(true)} />
         )}
       </View>
     </View>
