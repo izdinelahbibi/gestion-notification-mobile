@@ -145,7 +145,7 @@ const Home = () => {
             <View style={styles.notification}>
                 <Text style={styles.notificationText}>
                     {item.type === 'note'
-                        ? `📌 New Note: ${item.matiere} - Score: ${item.note}`
+                        ? `🔔 New Note: ${item.subject} - Score: ${item.note}`
                         : `📚 New Course: ${item.matiere} - ${item.title}`}
                 </Text>
             </View>
@@ -171,10 +171,10 @@ const Home = () => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, backgroundColor: '#f7f9fc' },
-    title: { fontSize: 26, fontWeight: '600', color: '#333', marginBottom: 10, textAlign: 'center' },
+    title: { fontSize: 26, fontWeight: '600', color: '#4A90E2', marginBottom: 10, textAlign: 'center' },
     notificationList: { paddingBottom: 20 },
-    notificationContainer: { padding: 12, marginVertical: 5, borderRadius: 8, backgroundColor: '#e3f2fd', borderWidth: 1, borderColor: '#90caf9' },
-    notification: { padding: 15, backgroundColor: '#bbdefb', borderRadius: 5, elevation: 2 },
+    notificationContainer: { padding: 12, marginVertical: 5, borderRadius: 8, backgroundColor: '#ffff', borderWidth: 1, borderColor: '#90caf9' },
+    notification: { padding: 15, backgroundColor: '#ffff', borderRadius: 5, elevation: 2 },
     notificationText: { fontSize: 16, fontWeight: '500', color: '#0d47a1' },
     errorText: { color: 'red', textAlign: 'center', marginTop: 20 },
 });
