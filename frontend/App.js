@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
 import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'; // Import des icônes Ionicons
 import Login from './components/Login';
 import SignupForm from './components/Signup';
 import Home from './components/Home';
@@ -25,7 +25,7 @@ const CustomDrawerContent = ({ setIsLoggedIn, refreshData, isLoggedIn, ...props 
     try {
       const token = await AsyncStorage.getItem('token');
       if (token) {
-        const response = await fetch('http://192.168.144.231:3000/api/profile', {
+        const response = await fetch('http://192.168.58.73:3000/api/profile', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -150,7 +150,7 @@ const App = () => {
               options={{
                 title: 'Login',
                 drawerIcon: ({ color }) => (
-                  <MaterialCommunityIcons name="login" color={color} size={20} />
+                  <Ionicons name="log-in-outline" color={color} size={20} />
                 ),
               }}
             >
@@ -162,7 +162,7 @@ const App = () => {
               options={{
                 title: 'Sign Up',
                 drawerIcon: ({ color }) => (
-                  <MaterialCommunityIcons name="account-plus" color={color} size={20} />
+                  <Ionicons name="person-add-outline" color={color} size={20} />
                 ),
               }}
             />
@@ -175,7 +175,7 @@ const App = () => {
               options={{
                 title: 'Home',
                 drawerIcon: ({ color }) => (
-                  <MaterialCommunityIcons name="home" color={color} size={20} />
+                  <Ionicons name="home-outline" color={color} size={20} />
                 ),
               }}
             />
@@ -185,7 +185,7 @@ const App = () => {
               options={{
                 title: 'My Grades',
                 drawerIcon: ({ color }) => (
-                  <MaterialCommunityIcons name="notebook" color={color} size={20} />
+                  <Ionicons name="school-outline" color={color} size={20} />
                 ),
               }}
             />
@@ -195,7 +195,7 @@ const App = () => {
               options={{
                 title: 'My Courses',
                 drawerIcon: ({ color }) => (
-                  <MaterialCommunityIcons name="book-open" color={color} size={20} />
+                  <Ionicons name="book-outline" color={color} size={20} />
                 ),
               }}
             />
@@ -204,7 +204,7 @@ const App = () => {
               options={{
                 title: 'Profile',
                 drawerIcon: ({ color }) => (
-                  <MaterialCommunityIcons name="account" color={color} size={20} />
+                  <Ionicons name="person-circle-outline" color={color} size={20} />
                 ),
               }}
             >
@@ -216,7 +216,7 @@ const App = () => {
               options={{
                 title: 'Contact',
                 drawerIcon: ({ color }) => (
-                  <MaterialCommunityIcons name="account-box" color={color} size={20} />
+                  <Ionicons name="mail-outline" color={color} size={20} />
                 ),
               }}
             />
@@ -226,7 +226,7 @@ const App = () => {
               options={{
                 title: 'Support',
                 drawerIcon: ({ color }) => (
-                  <MaterialCommunityIcons name="lifebuoy" color={color} size={20} />
+                  <Ionicons name="help-buoy-outline" color={color} size={20} />
                 ),
               }}
             />
@@ -235,7 +235,7 @@ const App = () => {
               options={{
                 title: 'Logout',
                 drawerIcon: ({ color }) => (
-                  <MaterialCommunityIcons name="logout" color={color} size={20} />
+                  <Ionicons name="log-out-outline" color={color} size={20} />
                 ),
               }}
             >

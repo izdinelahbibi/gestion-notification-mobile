@@ -11,7 +11,7 @@ const MesCours = () => {
     const fetchCours = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.144.231:3000/api/mescours', {
+            const response = await fetch('http://192.168.58.73:3000/api/mescours', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,

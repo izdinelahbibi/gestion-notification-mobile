@@ -9,7 +9,7 @@ const MesNotes = () => {
     const fetchNotes = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.144.231:3000/api/mesnotes', {
+            const response = await fetch('http://192.168.58.73:3000/api/mesnotes', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,

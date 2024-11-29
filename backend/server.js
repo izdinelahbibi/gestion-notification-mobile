@@ -13,7 +13,7 @@ const port = 3000;
 
 // Middleware configuration
 app.use(cors({
-    origin: 'http://192.168.144.231:3000:8081',
+    origin: 'http://192.168.58.73:3000:8081',
     credentials: true,
 }));
 app.use(bodyParser.json());
@@ -206,7 +206,7 @@ app.get('/api/profile', authenticateToken, (req, res) => {
 
         const user = results[0];
         // Create the complete URL for the profile photo
-        user.profile_photo = user.profile_photo ? `http://192.168.144.231:3000/uploads/${user.profile_photo}` : null;
+        user.profile_photo = user.profile_photo ? `http://192.168.58.73:3000/uploads/${user.profile_photo}` : null;
 
         return res.status(200).json({ success: true, data: user });
     });
@@ -322,7 +322,7 @@ app.get('/api/mescours', authenticateToken, (req, res) => {
                 matiere, 
                 classe, 
                 created_at, 
-                CONCAT('http://192.168.144.231:3000/uploads/', SUBSTRING_INDEX(pdf_path, '\\\\', -1)) AS fileUrl
+                CONCAT('http://192.168.58.73:3000/uploads/', SUBSTRING_INDEX(pdf_path, '\\\\', -1)) AS fileUrl
             FROM cours 
             WHERE classe = ?
         `;
