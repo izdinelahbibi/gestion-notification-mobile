@@ -19,7 +19,7 @@ const Profile = () => {
         setRefreshing(true); // Démarrer le rafraîchissement
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.58.73:3000/api/profile', {
+            const response = await fetch('http://192.168.144.231:3000/api/profile', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -50,7 +50,7 @@ const Profile = () => {
 
     const handleUpdate = async () => {
         const token = await AsyncStorage.getItem('token');
-        const response = await fetch('http://192.168.58.73:3000/api/profile', {
+        const response = await fetch('http://192.168.144.231:3000/api/profile', {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -75,7 +75,7 @@ const Profile = () => {
         }
 
         const token = await AsyncStorage.getItem('token');
-        const response = await fetch('http://192.168.58.73:3000/api/change-password', {
+        const response = await fetch('http://192.168.144.231:3000/api/change-password', {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -120,7 +120,7 @@ const Profile = () => {
                 type: 'image/jpeg',
             });
 
-            const uploadResponse = await fetch('http://192.168.58.73:3000/api/upload-photo', {
+            const uploadResponse = await fetch('http://192.168.144.231:3000/api/upload-photo', {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     editSection: {
         width: '100%',
         padding: 20,
-        borderRadius: 10,
+        borderRadius: 4,
         backgroundColor: '#fff',
         marginBottom: 20,
         shadowColor: '#000',
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     passwordSection: {
         width: '100%',
         padding: 20,
-        borderRadius: 10,
+        borderRadius: 4,
         backgroundColor: '#fff',
         shadowColor: '#000',
         shadowOffset: {
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 50,
-        borderColor: '#007bff',
+        borderColor: '#4A90E2',
         borderWidth: 1,
         borderRadius: 10,
         paddingHorizontal: 15,
@@ -301,9 +301,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     photoButton: {
-        backgroundColor: '#6c757d', // Couleur du bouton pour sélectionner la photo
-        paddingVertical: 10,
-        borderRadius: 10,
+        backgroundColor: '#4A90E2', 
+        paddingVertical: 11,
+        paddingHorizontal: 11,
+        borderRadius: 5,
         alignItems: 'center',
         width: '100%',
         shadowColor: '#000',
@@ -316,9 +317,9 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     primaryButton: {
-        backgroundColor: '#007bff', // Couleur bleu pour le bouton principal
+        backgroundColor: '#4A90E2', 
         paddingVertical: 12,
-        borderRadius: 10,
+        borderRadius: 5,
         alignItems: 'center',
         marginVertical: 10,
         width: '100%',

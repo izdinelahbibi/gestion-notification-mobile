@@ -12,7 +12,7 @@ import Profile from './components/Profile';
 import MesNotes from './components/MesNotes';
 import MesCours from './components/MesCours';
 import Contact from './components/Contact';
-import Support from './components/Support';
+
 
 const Drawer = createDrawerNavigator();
 
@@ -24,7 +24,7 @@ const CustomDrawerContent = ({ setIsLoggedIn, refreshData, isLoggedIn, ...props 
     try {
       const token = await AsyncStorage.getItem('token');
       if (token) {
-        const response = await fetch('http://192.168.58.73:3000/api/profile', {
+        const response = await fetch('http://192.168.144.231:3000/api/profile', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ const CustomDrawerContent = ({ setIsLoggedIn, refreshData, isLoggedIn, ...props 
       )}
       <DrawerItemList {...props} />
       <View style={styles.copyrightContainer}>
-        <Text style={styles.copyrightText}>© 2024 Lahbibi Ezzedine / Youssef Hbibi. All rights reserved.</Text>
+        <Text style={styles.copyrightText}> Lahbibi Ezzedine / Youssef Hbibi / Koussay Ayedi</Text>
       </View>
     </View>
   );
@@ -168,7 +168,7 @@ const App = () => {
               name="MesNotes"
               component={MesNotes}
               options={{
-                title: 'My Grades',
+                title: 'My Notes',
                 drawerIcon: ({ color }) => (
                   <Ionicons name="school-outline" color={color} size={20} />
                 ),
@@ -205,16 +205,7 @@ const App = () => {
                 ),
               }}
             />
-            <Drawer.Screen
-              name="Support"
-              component={Support}
-              options={{
-                title: 'Support',
-                drawerIcon: ({ color }) => (
-                  <Ionicons name="help-buoy-outline" color={color} size={20} />
-                ),
-              }}
-            />
+       
             <Drawer.Screen
               name="Logout"
               options={{

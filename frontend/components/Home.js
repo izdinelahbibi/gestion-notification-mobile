@@ -20,7 +20,7 @@ const Home = () => {
             }
 
             const classId = await AsyncStorage.getItem('class');
-            const responseNotes = await fetch('http://192.168.58.73:3000/api/check-new-notes', {
+            const responseNotes = await fetch('http://192.168.144.231:3000/api/check-new-notes', {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -28,7 +28,7 @@ const Home = () => {
                 },
             });
 
-            const responseCourses = await fetch(`http://192.168.58.73:3000/api/check-new-courses?classId=${classId}`, {
+            const responseCourses = await fetch(`http://192.168.144.231:3000/api/check-new-courses?classId=${classId}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -67,7 +67,7 @@ const Home = () => {
                 return;
             }
     
-            const response = await fetch(`http://192.168.58.73:3000/api/mark-note-viewed/${noteId}`, {
+            const response = await fetch(`http://192.168.144.231:3000/api/mark-note-viewed/${noteId}`, {
                 method: 'PUT',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -99,7 +99,7 @@ const Home = () => {
                 return;
             }
     
-            const response = await fetch(`http://192.168.58.73:3000/api/mark-course-viewed/${courseId}`, {
+            const response = await fetch(`http://192.168.144.231:3000/api/mark-course-viewed/${courseId}`, {
                 method: 'PUT',
                 headers: {
                     Authorization: `Bearer ${token}`,

@@ -9,7 +9,7 @@ const MesNotes = () => {
     const fetchNotes = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.58.73:3000/api/mesnotes', {
+            const response = await fetch('http://192.168.144.231:3000/api/mesnotes', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -40,8 +40,7 @@ const MesNotes = () => {
     const renderNote = ({ item }) => (
         <View style={styles.noteItem}>
             <View style={styles.noteContent}>
-                <Text style={styles.noteTitle}>📘 {item.matiere}</Text>
-                <Text style={styles.noteClass}>Class: {item.class}</Text>
+                <Text style={styles.noteTitle}>{item.subject}</Text>
             </View>
             <View style={[styles.gradeBadge, getGradeStyle(item.note)]}>
                 <Text style={styles.gradeText}>{item.note}</Text>
@@ -51,7 +50,7 @@ const MesNotes = () => {
 
     const getGradeStyle = (grade) => {
         if (grade >= 16) return { backgroundColor: '#4CAF50' }; // Green for good grades (16-20)
-        if (grade >= 11) return { backgroundColor: '#FFEB3B' }; // Yellow for average grades (11-15)
+        if (grade >= 11) return { backgroundColor: '#4CAF50' }; // Yellow for average grades (11-15)
         if (grade >= 6) return { backgroundColor: '#FF9800' }; // Orange for passable grades (6-10)
         return { backgroundColor: '#F44336' }; // Red for low grades (0-5)
     };
@@ -91,7 +90,7 @@ const styles = StyleSheet.create({
         padding: 20,
         marginVertical: 8,
         backgroundColor: '#ffffff',
-        borderRadius: 12,
+        borderRadius: 3,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
@@ -115,7 +114,7 @@ const styles = StyleSheet.create({
         minWidth: 50,
         paddingVertical: 6,
         paddingHorizontal: 12,
-        borderRadius: 15,
+        borderRadius: 3,
         alignItems: 'center',
         justifyContent: 'center',
     },

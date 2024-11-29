@@ -11,7 +11,7 @@ const MesCours = () => {
     const fetchCours = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.58.73:3000/api/mescours', {
+            const response = await fetch('http://192.168.144.231:3000/api/mescours', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
         padding: 18,
         marginVertical: 10,
         backgroundColor: '#ffffff',
-        borderRadius: 12,
+        borderRadius: 5,
         borderWidth: 1,
         borderColor: '#e0e6ef',
         shadowColor: '#000',
@@ -118,12 +118,12 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     courseTitle: {
-        fontSize: 20,
+        fontSize: 15,
         fontWeight: 'bold',
         color: '#1e305f',
     },
     courseDescription: {
-        fontSize: 16,
+        fontSize: 15,
         color: '#64748b',
         marginVertical: 4,
     },
@@ -135,9 +135,9 @@ const styles = StyleSheet.create({
     },
     downloadButton: {
         marginTop: 10,
-        backgroundColor: '#007bff',
+        backgroundColor: '#4A90E2',
         paddingVertical: 12,
-        borderRadius: 8,
+        borderRadius: 4,
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: '#007bff',

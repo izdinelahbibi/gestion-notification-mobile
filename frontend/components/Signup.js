@@ -38,7 +38,7 @@ const SignupForm = ({ navigation }) => {
 
         const data = { firstname, lastname, email, password, class: selectedClass };
 
-        fetch('http://192.168.58.73:3000/api/signup', {
+        fetch('http://192.168.144.231:3000/api/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         elevation: 5,
         borderWidth: 1,
-        borderColor: '##4A90E2', // Ajout d'une bordure subtile
+        borderColor: '#4A90E2', 
     },
     titleContainer: {
         flexDirection: 'row',

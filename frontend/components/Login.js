@@ -43,7 +43,7 @@ const Login = ({ setIsLoggedIn }) => {
         }
 
         try {
-            const response = await fetch('http://192.168.58.73:3000/api/login', {
+            const response = await fetch('http://192.168.144.231:3000/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -185,10 +185,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         padding: 30, // More padding to make it look spacious
         borderRadius: 15,
-        shadowColor: '#000',
+        shadowColor: '#4A90E2',
         shadowOpacity: 0.1,
         shadowRadius: 15,
         elevation: 10,
+        
     },
     titleContainer: {
         flexDirection: 'row',
@@ -264,14 +265,14 @@ const styles = StyleSheet.create({
     },
     loggedInMessage: {
         padding: 15,
-        backgroundColor: '#E8F9E8', // Greenish background to indicate success
+        backgroundColor: '#4A90E2', // Greenish background to indicate success
         borderRadius: 12,
         marginTop: 25, // Extra space for clarity
         alignItems: 'center',
     },
     loggedInText: {
         fontSize: 18,
-        color: '#27AE60', // Green for a successful login message
+        color: '#4A90E2', // Green for a successful login message
         fontWeight: '500',
     },
 });
