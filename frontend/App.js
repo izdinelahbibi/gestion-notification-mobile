@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
 import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons'; // Import des icônes Ionicons
+import { Ionicons } from '@expo/vector-icons';
 import Login from './components/Login';
 import SignupForm from './components/Signup';
 import Home from './components/Home';
@@ -17,7 +17,6 @@ import Support from './components/Support';
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = ({ setIsLoggedIn, refreshData, isLoggedIn, ...props }) => {
-  const [profilePhoto, setProfilePhoto] = useState(null);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
@@ -33,11 +32,10 @@ const CustomDrawerContent = ({ setIsLoggedIn, refreshData, isLoggedIn, ...props 
         });
         const data = await response.json();
         if (data.success) {
-          setProfilePhoto(data.data.profile_photo);
           setFirstName(data.data.firstname);
           setLastName(data.data.lastname);
         } else {
-          await AsyncStorage.multiRemove(['token', 'firstname', 'lastname', 'profile_photo']);
+          await AsyncStorage.multiRemove(['token', 'firstname', 'lastname']);
           setIsLoggedIn(false);
         }
       }
@@ -62,21 +60,8 @@ const CustomDrawerContent = ({ setIsLoggedIn, refreshData, isLoggedIn, ...props 
 
   return (
     <View style={styles.drawerContent}>
-      {isLoggedIn ? (
-        <>
-          {profilePhoto && (
-            <Image
-              source={{ uri: profilePhoto }}
-              style={styles.profilePhoto}
-            />
-          )}
-          <Text style={styles.userName}>{firstName} {lastName}</Text>
-        </>
-      ) : (
-        <Image
-          source={require('./assets/Ti.jpg')}
-          style={styles.defaultLogo}
-        />
+      {isLoggedIn && (
+        <Text style={styles.userName}>{firstName} {lastName}</Text>
       )}
       <DrawerItemList {...props} />
       <View style={styles.copyrightContainer}>
@@ -105,7 +90,7 @@ const App = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
-      setRefreshData(prev => !prev);
+      setRefreshData((prev) => !prev);
     }
   }, [isLoggedIn]);
 
@@ -254,21 +239,6 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 16,
     backgroundColor: '#fff',
-  },
-  profilePhoto: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-    alignSelf: 'center',
-    borderColor: '#1A237E',
-    borderWidth: 2,
-  },
-  defaultLogo: {
-    width: 120,
-    height: 120,
-    alignSelf: 'center',
-    marginBottom: 20,
   },
   userName: {
     fontSize: 22,
