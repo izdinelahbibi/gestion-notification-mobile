@@ -57,7 +57,7 @@ const MesNotes = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>My Grades</Text>
+            <Text style={styles.header}>My Notes</Text>
             <FlatList
                 data={notes}
                 keyExtractor={(item) => item.id.toString()}
